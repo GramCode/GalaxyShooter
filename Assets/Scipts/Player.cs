@@ -5,9 +5,11 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private float _speed = 5f;
-
-
     [SerializeField] private GameObject _laserPrefab;
+
+    [SerializeField] private float _fireRate = 0.5f;
+
+    private float _canFire = -1f;
 
     void Update()
     {
@@ -17,10 +19,11 @@ public class Player : MonoBehaviour
 
     void ShootLaser()
     {
-        //Check if the space key is pressed
-        if (Input.GetKeyDown(KeyCode.Space))
+        //Check if the space key is pressed and 0.5s has passed
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
         {
-            Instantiate(_laserPrefab, transform.position, Quaternion.identity);
+            _canFire = Time.time + _fireRate;
+            Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f,0), Quaternion.identity);
         }
     }
 
