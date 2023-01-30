@@ -7,9 +7,9 @@ public class Player : MonoBehaviour
     [SerializeField] private float _speed = 5f;
     [SerializeField] private GameObject _laserPrefab;
 
-    [SerializeField] private float _fireRate = 0.5f;
-
+    private float _fireRate = 0.5f;
     private float _canFire = -1f;
+    private int _lives = 3;
 
     void Update()
     {
@@ -33,5 +33,15 @@ public class Player : MonoBehaviour
         float verticalAxis = Input.GetAxis("Vertical");
 
         transform.Translate(new Vector3(horizontalAxis * _speed * Time.deltaTime, verticalAxis * _speed * Time.deltaTime, 0));
+    }
+
+    public void Damage()
+    {
+        _lives--;
+
+        if (_lives < 1)
+        {
+            Destroy(this.gameObject);
+        }
     }
 }
