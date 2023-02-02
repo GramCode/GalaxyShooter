@@ -5,12 +5,13 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private float _speed = 5f;
+    [SerializeField] private int _lives = 3;
     [SerializeField] private GameObject _laserPrefab;
     private SpawnManager _spawnManager;
 
     private float _fireRate = 0.5f;
     private float _canFire = -1f;
-    private int _lives = 3;
+
 
     private void Start()
     {
@@ -25,7 +26,7 @@ public class Player : MonoBehaviour
     {
         CalculateMovement();
         ShootLaser();
-        
+        PlayerBounds();
     }
 
     void ShootLaser()
@@ -40,10 +41,31 @@ public class Player : MonoBehaviour
 
     void CalculateMovement()
     {
-        float horizontalAxis = Input.GetAxis("Horizontal");
-        float verticalAxis = Input.GetAxis("Vertical");
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+        Vector3 distance = new Vector3(horizontalInput, verticalInput, 0);
+        transform.Translate(distance * _speed * Time.deltaTime, 0);
+    }
 
-        transform.Translate(new Vector3(horizontalAxis * _speed * Time.deltaTime, verticalAxis * _speed * Time.deltaTime, 0));
+    void PlayerBounds()
+    {
+        if (transform.position.y >= 0)
+        {
+            transform.position = new Vector3(transform.position.x, 0, 0);
+        }
+        else if (transform.position.y <= -3.8f)
+        {
+            transform.position = new Vector3(transform.position.x, -3.8f, 0);
+        }
+
+        if (transform.position.x > 11.3f)
+        {
+            transform.position = new Vector3(-11, transform.position.y);
+        }
+        else if (transform.position.x < -11.3f)
+        {
+            transform.position = new Vector3(11.3f, transform.position.y, 0);
+        }
     }
 
     public void Damage()
