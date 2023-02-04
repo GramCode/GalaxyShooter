@@ -6,14 +6,21 @@ public class Enemy : MonoBehaviour
 {
     [SerializeField] private float _speed = 4.0f;
 
-    void Start()
-    {
-        
-    }
 
     void Update()
     {
         EnemyBehavior();
+    }
+
+    void EnemyBehavior()
+    {
+        transform.Translate(Vector3.down * _speed * Time.deltaTime);
+
+        if (transform.position.y < -5.6f)
+        {
+            float randomX = Random.Range(-9, 9);
+            transform.position = new Vector3(randomX, 7.5f, 0);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -27,6 +34,7 @@ public class Enemy : MonoBehaviour
 
             Destroy(this.gameObject);
         }
+
         if (other.CompareTag("Laser"))
         {
             Destroy(this.gameObject);
@@ -34,15 +42,6 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void EnemyBehavior()
-    {
-        transform.Translate(Vector3.down * _speed * Time.deltaTime);
-
-        if (transform.position.y < -5.6f)
-        {
-            float randomX = Random.Range(-9, 9);
-            transform.position = new Vector3(randomX, 7.5f, 0);
-        }
-    }
+    
     
 }
