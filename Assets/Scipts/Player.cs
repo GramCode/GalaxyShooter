@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private float _speed = 5f;
+    private float _speedMultiplier = 2f;
     [SerializeField] private int _lives = 3;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _trippleShotPrefab;
@@ -13,7 +14,8 @@ public class Player : MonoBehaviour
     private float _fireRate = 0.5f;
     private float _canFire = -1f;
     private bool _isTrippleShotActive = false;
-
+    [SerializeField]
+    private bool _isSpeedBoostActive = false;
 
     private void Start()
     {
@@ -36,7 +38,15 @@ public class Player : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
         Vector3 distance = new Vector3(horizontalInput, verticalInput, 0);
-        transform.Translate(distance * _speed * Time.deltaTime, 0);
+        if (_isSpeedBoostActive)
+        {
+            transform.Translate(distance * (_speed * _speedMultiplier) * Time.deltaTime, 0);
+        }
+        else
+        {
+            transform.Translate(distance * _speed * Time.deltaTime, 0);
+        }
+        
     }
 
     void ShootLaser()
@@ -53,6 +63,7 @@ public class Player : MonoBehaviour
             }
             else
             {
+                //Fire just one laser
                 Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
             }
         }
@@ -103,4 +114,15 @@ public class Player : MonoBehaviour
         _isTrippleShotActive = false;
     }
 
+    public void SpeedBoostActive()
+    {
+        _isSpeedBoostActive = true;
+        StartCoroutine(SpeedBoostPowerDownRoutine());
+    }
+
+    IEnumerator SpeedBoostPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);
+        _isSpeedBoostActive = false;
+    }
 }
