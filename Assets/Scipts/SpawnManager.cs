@@ -32,7 +32,7 @@ public class SpawnManager : MonoBehaviour
     {
         while (_stopSpawning == false)
         {
-            int randomPowerup = Random.Range(0, 2);
+            int randomPowerup = Random.Range(0, 3);
             Instantiate(_powerups[randomPowerup], _posToSpawn, Quaternion.identity);
             yield return new WaitForSeconds(Random.Range(3, 8));
         }
