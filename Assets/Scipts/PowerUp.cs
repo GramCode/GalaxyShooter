@@ -28,15 +28,13 @@ public class PowerUp : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            //Collect
             Player player = other.gameObject.GetComponent<Player>();
-
             if(player != null)
             {
                 switch (_powerupID)
                 {
                     case 0:
-                        player.TrippleShotActive();
+                        player.TripleShotActive();
                         break;
                     case 1:
                         player.SpeedBoostActive();

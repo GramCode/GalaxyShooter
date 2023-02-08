@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7964672423786858300}
   - component: {fileID: 7964672423786858301}
-  - component: {fileID: 7964672423786858298}
   - component: {fileID: 7964672423786858299}
   - component: {fileID: 7964672423786858296}
+  - component: {fileID: 7964672423786858298}
   - component: {fileID: 7964672423786858303}
   m_Layer: 0
   m_Name: Shield Powerup
@@ -88,20 +88,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &7964672423786858298
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7964672423786858297}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75406599befd4417bbfb505cf42d64e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _speed: 3
-  _powerupID: 2
 --- !u!61 &7964672423786858299
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -149,6 +135,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &7964672423786858298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7964672423786858297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75406599befd4417bbfb505cf42d64e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _speed: 3
+  _powerupID: 2
 --- !u!95 &7964672423786858303
 Animator:
   serializedVersion: 4

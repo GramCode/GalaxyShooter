@@ -5,7 +5,12 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] private float _speed = 4.0f;
+    private Player _player;
 
+    private void Start()
+    {
+        _player = GameObject.Find("Player").transform.GetComponent<Player>();
+    }
 
     void Update()
     {
@@ -27,16 +32,19 @@ public class Enemy : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            Player player = other.transform.GetComponent<Player>();
+           
 
-            if (player != null)
-                player.Damage();
+            if (_player != null)
+                _player.Damage();
 
             Destroy(this.gameObject);
         }
 
         if (other.CompareTag("Laser"))
         {
+            //Add 10 to score
+            if (_player != null)
+                _player.AddScore(10);
             Destroy(this.gameObject);
             Destroy(other.gameObject);
         }
