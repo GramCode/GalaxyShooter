@@ -19,7 +19,6 @@ public class Player : MonoBehaviour
     private bool _isSpeedBoostActive = false;
     private bool _isShieldActive = false;
     private int _score;
-  
     
 
     private void Start()
