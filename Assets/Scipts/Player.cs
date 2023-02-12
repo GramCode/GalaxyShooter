@@ -10,6 +10,9 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _trippleShotPrefab;
     [SerializeField] private GameObject _trippleShotPowerUp;
     [SerializeField] private GameObject _shieldGameObject;
+
+    [SerializeField] private GameObject[] _fireBallDamaged;
+
     private SpawnManager _spawnManager;
     private UIManager _uiManager;
     private float _speedMultiplier = 2f;
@@ -111,7 +114,18 @@ public class Player : MonoBehaviour
         }
 
         _lives--;
+
+        if (_lives == 2)
+        {
+            _fireBallDamaged[0].SetActive(true);
+        }
+        else if (_lives == 1)
+        {
+            _fireBallDamaged[1].SetActive(true);
+        }
+
         _uiManager.UpdateLives(_lives);
+
         if (_lives < 1)
         {
             _spawnManager.OnPlayerDeath();
