@@ -16,7 +16,7 @@ public class UIManager : MonoBehaviour
 
     void Start()
     { 
-        _scoreText.text = "Score " + 0;
+        _scoreText.text = "Score: " + 0;
         _gameOverText.gameObject.SetActive(false);
         _resetSceneText.gameObject.SetActive(false);
 
