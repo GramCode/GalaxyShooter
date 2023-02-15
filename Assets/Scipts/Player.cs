@@ -10,7 +10,6 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _trippleShotPrefab;
     [SerializeField] private GameObject _trippleShotPowerUp;
     [SerializeField] private GameObject _shieldGameObject;
-
     [SerializeField] private GameObject[] _fireBallDamaged;
 
     private SpawnManager _spawnManager;
@@ -79,6 +78,8 @@ public class Player : MonoBehaviour
                 //Fire just one laser
                 Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
             }
+
+            //Play laser audio clip
         }
     }
 
