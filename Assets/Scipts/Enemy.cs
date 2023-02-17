@@ -5,7 +5,9 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] private float _speed = 4.0f;
+    private AudioSource _audioSource;
     private Player _player;
+    private Collider2D _collider2D;
 
     private Animator _anim;
 
@@ -23,6 +25,17 @@ public class Enemy : MonoBehaviour
             Debug.LogError("Animator component of Enemy not found.");
         }
 
+        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource == null)
+        {
+            Debug.LogError("AudioSource on Enemy is NULL.");
+        }
+       
+        _collider2D = GetComponent<Collider2D>();
+        if (_collider2D == null)
+        {
+            Debug.LogError("Enemy collider is NULL");
+        }
     }
 
     void Update()
@@ -48,11 +61,11 @@ public class Enemy : MonoBehaviour
            
             if (_player != null)
                 _player.Damage();
-
             _anim.SetTrigger("OnEnemyDeath");
             _speed = 0;
+            _audioSource.Play();
+            Destroy(_collider2D);
             Destroy(this.gameObject, 2.8f);
-
         }
 
         if (other.CompareTag("Laser"))
@@ -60,11 +73,16 @@ public class Enemy : MonoBehaviour
             //Add 10 to score
             if (_player != null)
                 _player.AddScore(10);
+            
             _anim.SetTrigger("OnEnemyDeath");
             _speed = 0;
+            _audioSource.Play();
+            Destroy(_collider2D);
             Destroy(this.gameObject, 2.8f);
             Destroy(other.gameObject);
         }
+
+        
     }
 
     

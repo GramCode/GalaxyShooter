@@ -10,10 +10,13 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _trippleShotPrefab;
     [SerializeField] private GameObject _trippleShotPowerUp;
     [SerializeField] private GameObject _shieldGameObject;
+    [SerializeField] private AudioClip _audioClip; 
     [SerializeField] private GameObject[] _fireBallDamaged;
+
 
     private SpawnManager _spawnManager;
     private UIManager _uiManager;
+    private AudioSource _audioSource;
     private float _speedMultiplier = 2f;
     private float _fireRate = 0.5f;
     private float _canFire = -1f;
@@ -27,6 +30,7 @@ public class Player : MonoBehaviour
     {
         _spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        _audioSource = GetComponent<AudioSource>();
         if (_spawnManager == null)
         {
             Debug.LogError("The Spawn Manager is null");
@@ -35,6 +39,15 @@ public class Player : MonoBehaviour
         if (_uiManager == null)
         {
             Debug.LogError("The UIManager is NULL");
+        }
+
+        if (_audioSource == null)
+        {
+            Debug.LogError("AudioSource on the player is NULL.");
+        }
+        else
+        {
+            _audioSource.clip = _audioClip;
         }
     }
 
@@ -80,6 +93,7 @@ public class Player : MonoBehaviour
             }
 
             //Play laser audio clip
+            _audioSource.Play();
         }
     }
 

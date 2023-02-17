@@ -6,6 +6,7 @@ public class Asteroid : MonoBehaviour
 {
     [SerializeField] private float _rotateSpeed = 20.0f;
     [SerializeField] private GameObject _explosionAnim;
+
     private SpawnManager _spawnManager;
 
     private void Start()
@@ -26,7 +27,9 @@ public class Asteroid : MonoBehaviour
             Destroy(collision.gameObject);
             
             _spawnManager.StartSpawning();
+            //_audioSource.Play();
             Destroy(this.gameObject, 0.2f);
+            
         }
     }
 }
