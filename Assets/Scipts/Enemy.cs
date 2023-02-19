@@ -5,11 +5,16 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] private float _speed = 4.0f;
+    [SerializeField] private GameObject _laserPrefab;
+    [SerializeField] private AudioClip _laserAudioClip;
+
     private AudioSource _audioSource;
     private Player _player;
     private Collider2D _collider2D;
-
     private Animator _anim;
+
+    private float _fireRate = 3.0f;
+    private float _canShoot = -1;
 
     private void Start()
     {
@@ -36,11 +41,27 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogError("Enemy collider is NULL");
         }
+        //start coroutine
+
     }
 
     void Update()
     {
         EnemyBehavior();
+
+        if (Time.time > _canShoot)
+        {
+            _fireRate = Random.Range(3f, 7f);
+            _canShoot = Time.time + _fireRate;
+            float positionToInstatiate = transform.position.y - 0.6f;
+            GameObject enemyLaser = Instantiate(_laserPrefab, new Vector3(transform.position.x, positionToInstatiate, 0), Quaternion.identity);
+            Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+
+            foreach(var laser in lasers)
+            {
+                laser.AssignEnemyLaser();
+            }
+        }
     }
 
     void EnemyBehavior()
@@ -53,6 +74,7 @@ public class Enemy : MonoBehaviour
             transform.position = new Vector3(randomX, 7.5f, 0);
         }
     }
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -70,7 +92,6 @@ public class Enemy : MonoBehaviour
 
         if (other.CompareTag("Laser"))
         {
-            //Add 10 to score
             if (_player != null)
                 _player.AddScore(10);
             

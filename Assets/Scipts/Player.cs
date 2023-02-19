@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
     private SpawnManager _spawnManager;
     private UIManager _uiManager;
     private AudioSource _audioSource;
+    private Laser _laserScript;
     private float _speedMultiplier = 2f;
     private float _fireRate = 0.5f;
     private float _canFire = -1f;
@@ -24,7 +25,7 @@ public class Player : MonoBehaviour
     private bool _isSpeedBoostActive = false;
     private bool _isShieldActive = false;
     private int _score;
-    
+
 
     private void Start()
     {
@@ -49,6 +50,11 @@ public class Player : MonoBehaviour
         {
             _audioSource.clip = _audioClip;
         }
+        _laserScript = _laserPrefab.GetComponent<Laser>();
+        if (_laserScript == null)
+        {
+            Debug.LogError("The Laser Script on Player is NULL.");
+        }
     }
 
     void Update()
@@ -56,6 +62,7 @@ public class Player : MonoBehaviour
         CalculateMovement();
         ShootLaser();
         PlayerBounds();
+
     }
 
     void CalculateMovement()
@@ -91,7 +98,6 @@ public class Player : MonoBehaviour
                 //Fire just one laser
                 Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
             }
-
             //Play laser audio clip
             _audioSource.Play();
         }
