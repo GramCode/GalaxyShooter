@@ -7,6 +7,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private GameObject _enemyPrefab;
     [SerializeField] private GameObject _enemyContainer;
     [SerializeField] private GameObject[] _powerups;
+
     private Vector3 _posToSpawn;
     private bool _stopSpawning = false;
 

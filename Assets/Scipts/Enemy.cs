@@ -15,7 +15,6 @@ public class Enemy : MonoBehaviour
 
     private float _fireRate = 3.0f;
     private float _canShoot = -1;
-
     private bool _isDestroyed = false;
 
     private void Start()
@@ -43,7 +42,6 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogError("Enemy collider is NULL");
         }
-        //start coroutine
 
     }
 
@@ -79,14 +77,6 @@ public class Enemy : MonoBehaviour
             GameObject enemyLaser = Instantiate(_laserPrefab, new Vector3(transform.position.x, positionToInstatiate, 0), Quaternion.identity);
             Laser lasers = enemyLaser.GetComponent<Laser>();
             lasers.AssignEnemyLaser();
-            /*
-            Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
-
-            foreach (var laser in lasers)
-            {
-                laser.AssignEnemyLaser();
-            }
-            */
         }
     }
 

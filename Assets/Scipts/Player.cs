@@ -14,18 +14,19 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip _audioClip; 
     [SerializeField] private GameObject[] _fireBallDamaged;
 
-
     private SpawnManager _spawnManager;
     private UIManager _uiManager;
     private AudioSource _audioSource;
+
     private float _speedMultiplier = 2f;
     private float _fireRate = 0.5f;
     private float _canFire = -1f;
+
     private bool _isTrippleShotActive = false;
     private bool _isSpeedBoostActive = false;
     private bool _isShieldActive = false;
-    private int _score;
 
+    private int _score;
 
     private void Start()
     {
@@ -79,8 +80,7 @@ public class Player : MonoBehaviour
 
     void ShootLaser()
     {
-        //Check if the space key is pressed and 0.5s has passed
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire) //Can fire equals 0.5s
         {
             _canFire = Time.time + _fireRate;
 
@@ -94,7 +94,6 @@ public class Player : MonoBehaviour
                 //Fire just one laser
                 Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
             }
-            //Play laser audio clip
             _audioSource.Play();
         }
     }
@@ -124,7 +123,6 @@ public class Player : MonoBehaviour
     {
         if (_isShieldActive)
         {
-            //Shield becomes unactive
             _isShieldActive = false;
             _shieldGameObject.SetActive(false);
             return;

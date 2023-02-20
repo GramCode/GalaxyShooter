@@ -84,7 +84,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 1}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -256,7 +256,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -3054442907374488312, guid: 48e71e4ead7eb4637a0cd6f9c09d8508, type: 3}
+    - {fileID: 3447305525719718424, guid: 48e71e4ead7eb4637a0cd6f9c09d8508, type: 3}
+    - {fileID: 3447305525719718431, guid: 48e71e4ead7eb4637a0cd6f9c09d8508, type: 3}
+    - {fileID: 7417561426939999716, guid: 48e71e4ead7eb4637a0cd6f9c09d8508, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 48e71e4ead7eb4637a0cd6f9c09d8508, type: 3}
 --- !u!4 &4284729055750248860 stripped
 Transform:
@@ -326,7 +330,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3447305525719718431, guid: 48e71e4ead7eb4637a0cd6f9c09d8508, type: 3}
+    - {fileID: 3447305525719718424, guid: 48e71e4ead7eb4637a0cd6f9c09d8508, type: 3}
+    - {fileID: 7417561426939999716, guid: 48e71e4ead7eb4637a0cd6f9c09d8508, type: 3}
+    - {fileID: -3054442907374488312, guid: 48e71e4ead7eb4637a0cd6f9c09d8508, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 48e71e4ead7eb4637a0cd6f9c09d8508, type: 3}
 --- !u!4 &5280613390659263675 stripped
 Transform:
