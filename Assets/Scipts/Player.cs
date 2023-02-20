@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _trippleShotPrefab;
     [SerializeField] private GameObject _trippleShotPowerUp;
     [SerializeField] private GameObject _shieldGameObject;
+    [SerializeField] private GameObject _explosionPrefab;
     [SerializeField] private AudioClip _audioClip; 
     [SerializeField] private GameObject[] _fireBallDamaged;
 
@@ -17,7 +18,6 @@ public class Player : MonoBehaviour
     private SpawnManager _spawnManager;
     private UIManager _uiManager;
     private AudioSource _audioSource;
-    private Laser _laserScript;
     private float _speedMultiplier = 2f;
     private float _fireRate = 0.5f;
     private float _canFire = -1f;
@@ -50,11 +50,7 @@ public class Player : MonoBehaviour
         {
             _audioSource.clip = _audioClip;
         }
-        _laserScript = _laserPrefab.GetComponent<Laser>();
-        if (_laserScript == null)
-        {
-            Debug.LogError("The Laser Script on Player is NULL.");
-        }
+   
     }
 
     void Update()
@@ -150,7 +146,9 @@ public class Player : MonoBehaviour
         if (_lives < 1)
         {
             _spawnManager.OnPlayerDeath();
-            Destroy(this.gameObject);
+            Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+
+            Destroy(this.gameObject, 0.2f);
         }
     }
 

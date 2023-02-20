@@ -331,7 +331,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 366640811}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -3.173, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -386,6 +386,7 @@ MonoBehaviour:
   _trippleShotPrefab: {fileID: 6832674826992436412, guid: 68cf6d061ac62491380c68b57bef3f83, type: 3}
   _trippleShotPowerUp: {fileID: 581714895718332740, guid: 98ed0b28d6cfe4441a462d7fc2d8cc0b, type: 3}
   _shieldGameObject: {fileID: 1843241956}
+  _explosionPrefab: {fileID: 93922394887139743, guid: e482fff6f90024fad8d2f2ab7a7e381a, type: 3}
   _audioClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
   _fireBallDamaged:
   - {fileID: 1353635049}

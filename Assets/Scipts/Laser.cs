@@ -55,7 +55,10 @@ public class Laser : MonoBehaviour
     public void AssignEnemyLaser()
     {
         _isEnemyLaser = true;
+        Debug.Log("Is enemy laser");
     }
+
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -65,6 +68,7 @@ public class Laser : MonoBehaviour
             if (player != null)
             {
                 player.Damage();
+                Destroy(this.gameObject);
             }
         }
     }
