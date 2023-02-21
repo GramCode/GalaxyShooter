@@ -54,19 +54,21 @@ public class Player : MonoBehaviour
    
     }
 
-    void Update()
+    private void Update()
     {
         CalculateMovement();
         ShootLaser();
         PlayerBounds();
-
+        SpeedRate();
     }
 
-    void CalculateMovement()
+    private void CalculateMovement()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
+
         Vector3 distance = new Vector3(horizontalInput, verticalInput, 0);
+
         if (_isSpeedBoostActive)
         {
             transform.Translate(distance * (_speed * _speedMultiplier) * Time.deltaTime, 0);
@@ -75,10 +77,9 @@ public class Player : MonoBehaviour
         {
             transform.Translate(distance * _speed * Time.deltaTime, 0);
         }
-        
     }
 
-    void ShootLaser()
+    private void ShootLaser()
     {
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire) //Can fire equals 0.5s
         {
@@ -98,7 +99,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    void PlayerBounds()
+    private void PlayerBounds()
     {
         if (transform.position.y >= 0)
         {
@@ -116,6 +117,20 @@ public class Player : MonoBehaviour
         else if (transform.position.x < -11.3f)
         {
             transform.position = new Vector3(11.3f, transform.position.y, 0);
+        }
+    }
+
+    private void SpeedRate()
+    {
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            _isSpeedBoostActive = true;
+        }
+
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            _isSpeedBoostActive = false;
         }
     }
 
