@@ -331,7 +331,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 366640811}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -3.173, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -391,6 +391,10 @@ MonoBehaviour:
   _fireBallDamaged:
   - {fileID: 1353635049}
   - {fileID: 1048496451}
+  _shieldMaterials:
+  - {fileID: 2100000, guid: 31a2d52b0b90a4a5da2d9e1b22f7e0ac, type: 2}
+  - {fileID: 2100000, guid: 9357771bab45943d09fecc1d264afa5d, type: 2}
+  - {fileID: 2100000, guid: 223eb358909f94a28a88c88f7c8ebe9c, type: 2}
 --- !u!82 &366640816
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1977,7 +1981,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 223eb358909f94a28a88c88f7c8ebe9c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

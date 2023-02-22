@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _explosionPrefab;
     [SerializeField] private AudioClip _audioClip; 
     [SerializeField] private GameObject[] _fireBallDamaged;
+    [SerializeField] private List<Material> _shieldMaterials;
 
     private SpawnManager _spawnManager;
     private UIManager _uiManager;
@@ -27,6 +28,7 @@ public class Player : MonoBehaviour
     private bool _isShieldActive = false;
 
     private int _score;
+    private int _shieldLives = 3;
 
     private void Start()
     {
@@ -136,13 +138,13 @@ public class Player : MonoBehaviour
 
     public void Damage()
     {
+
         if (_isShieldActive)
         {
-            _isShieldActive = false;
-            _shieldGameObject.SetActive(false);
+            ShieldLives();
             return;
         }
-
+        
         _lives--;
 
         if (_lives == 2)
@@ -165,6 +167,62 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void ShieldLives()
+    {
+        _shieldLives--;
+        
+        if (_shieldLives == 2)
+        {
+            _shieldGameObject.GetComponent<SpriteRenderer>().material = _shieldMaterials[1];
+            StartCoroutine(ShieldRoutine());
+        }
+        else if (_shieldLives == 1)
+        {
+            _shieldGameObject.GetComponent<SpriteRenderer>().material = _shieldMaterials[0];
+        }
+        else
+        {
+            _shieldGameObject.SetActive(false);
+            _isShieldActive = false;
+        }
+        
+    }
+
+    IEnumerator ShieldRoutine()
+    {
+        float seconds1, seconds2;
+
+        while (_isShieldActive && _shieldLives < 3)
+        {
+            if (_shieldLives == 2)
+            {
+                seconds1 = 0.1f;
+                seconds2 = 1.0f;
+            }
+            else
+            {
+                seconds1 = 0.1f;
+                seconds2 = 0.5f;
+            }
+
+            _shieldGameObject.SetActive(false);
+            yield return new WaitForSeconds(seconds1);
+            _shieldGameObject.SetActive(true);
+            yield return new WaitForSeconds(seconds2);
+        }
+    }
+
+    public void ResetShieldLives()
+    {
+        _shieldLives = 3;
+        _shieldGameObject.GetComponent<SpriteRenderer>().material = _shieldMaterials[2];
+    }
+
+    public bool IsShieldActive()
+    {
+        return _isShieldActive;
+    }
+    
     public void TripleShotActive()
     {
         _isTrippleShotActive = true;

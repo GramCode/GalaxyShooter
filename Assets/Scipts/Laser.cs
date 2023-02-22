@@ -56,7 +56,6 @@ public class Laser : MonoBehaviour
     public void AssignEnemyLaser()
     {
         _isEnemyLaser = true;
-        Debug.Log("Is enemy laser");
     }
 
 
