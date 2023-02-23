@@ -12,7 +12,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text _gameOverText;
     [SerializeField] private TMP_Text _resetSceneText;
 
+    [SerializeField] private TMP_Text _ammoText;
+    [SerializeField] private TMP_Text _noAmmoText;
+    [SerializeField] private List<GameObject> _laserImageUI;
+
     private GameManager _gameManager;
+    private Player _player;
 
     void Start()
     { 
@@ -26,6 +31,15 @@ public class UIManager : MonoBehaviour
         {
             Debug.LogError("Game manager is NULL");
         }
+
+        _player = GameObject.Find("Player").GetComponent<Player>();
+
+        if (_player == null)
+        {
+            Debug.LogError("Player is null in UIManager");
+        }
+
+        _ammoText.color = Color.green;
     }
 
     public void UpdateScore(int playerScore)
@@ -64,5 +78,51 @@ public class UIManager : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
         }
     }
+
+    public void HideBullet(int index)
+    {
+        _laserImageUI[index].SetActive(false);
+    }
+
+    public void HideNoAmmoText()
+    {
+        _noAmmoText.gameObject.SetActive(false);
+    }
+
+    public void SetTextColor(Color color)
+    {
+        _ammoText.color = color;
+    }
+
+    public void DisplayBullets()
+    {
+        foreach (var bullet in _laserImageUI)
+        {
+            bullet.SetActive(true);
+        }
+    }
+
+    public void UpdateAmmoText(int ammoCount)
+    {
+        _ammoText.text = ammoCount.ToString();
+    }
+
+    public void DisplayNoAmmoText()
+    {
+        _noAmmoText.gameObject.SetActive(true);
+        StartCoroutine(NoAmmoFlickerRoutine());
+    }
+
+    IEnumerator NoAmmoFlickerRoutine()
+    {
+        while (_player.IsDisplayingNoAmmoText())
+        {
+            _noAmmoText.gameObject.SetActive(false);
+            yield return new WaitForSeconds(0.3f);
+            _noAmmoText.gameObject.SetActive(true);
+            yield return new WaitForSeconds(0.6f);
+        }
+    }
+
 
 }

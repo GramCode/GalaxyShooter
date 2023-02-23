@@ -26,9 +26,15 @@ public class Player : MonoBehaviour
     private bool _isTrippleShotActive = false;
     private bool _isSpeedBoostActive = false;
     private bool _isShieldActive = false;
+    //private bool _collectedAmmo = false;
 
     private int _score;
     private int _shieldLives = 3;
+
+    private int _ammoCount = 15;
+    private int _uiLasersCount;
+    private bool _isNoAmmoTextDisplaying = false;
+
 
     private void Start()
     {
@@ -87,17 +93,54 @@ public class Player : MonoBehaviour
         {
             _canFire = Time.time + _fireRate;
 
-            if (_isTrippleShotActive)
+            if (_ammoCount == 0)
             {
-                //Fire three lasers
-                Instantiate(_trippleShotPrefab, transform.position, Quaternion.identity);
+                if (!_isNoAmmoTextDisplaying)
+                {
+                    _isNoAmmoTextDisplaying = true;
+                    _uiManager.DisplayNoAmmoText();
+                }
             }
+
             else
             {
-                //Fire just one laser
-                Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
+                if (_isTrippleShotActive)
+                {
+                    //Fire three lasers
+                    Instantiate(_trippleShotPrefab, transform.position, Quaternion.identity);
+                }
+                else
+                {
+                    //Fire just one laser
+                    Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
+                }
+
+                _ammoCount--;
+                _uiManager.UpdateAmmoText(_ammoCount);
+
+                if (_ammoCount <= 5)
+                {
+                    _uiManager.SetTextColor(Color.red);
+                }
+                else if (_ammoCount <= 10)
+                {
+                    _uiManager.SetTextColor(Color.white);
+                }
+
+                if (_ammoCount % 3 == 0) //if ammo count divided by three reminder is equal to zero
+                {
+                    _uiManager.HideBullet(_uiLasersCount);
+                    _uiLasersCount++;
+
+                    if (_uiLasersCount > 4)
+                    {
+                        _uiLasersCount = 0;
+
+                    }
+                }
+
+                _audioSource.Play();
             }
-            _audioSource.Play();
         }
     }
 
@@ -259,4 +302,23 @@ public class Player : MonoBehaviour
         _uiManager.UpdateScore(_score);
     }
 
+    public bool IsDisplayingNoAmmoText()
+    {
+        return _isNoAmmoTextDisplaying;
+    }
+
+    public void RefillAmmo()
+    {
+        if (_isNoAmmoTextDisplaying)
+        {
+            _uiManager.HideNoAmmoText();
+            _isNoAmmoTextDisplaying = false;
+        }
+        _ammoCount = 15;
+        _uiLasersCount = 0;
+        _uiManager.SetTextColor(Color.green);
+        _uiManager.DisplayBullets();
+        _uiManager.UpdateAmmoText(_ammoCount);
+
+    }
 }
