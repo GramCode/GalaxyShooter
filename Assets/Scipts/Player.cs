@@ -8,7 +8,6 @@ public class Player : MonoBehaviour
     [SerializeField] private int _lives = 3;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _trippleShotPrefab;
-    [SerializeField] private GameObject _trippleShotPowerUp;
     [SerializeField] private GameObject _shieldGameObject;
     [SerializeField] private GameObject _explosionPrefab;
     [SerializeField] private AudioClip _audioClip; 
@@ -319,6 +318,24 @@ public class Player : MonoBehaviour
         _uiManager.SetTextColor(Color.green);
         _uiManager.DisplayBullets();
         _uiManager.UpdateAmmoText(_ammoCount);
+
+    }
+
+    public void AddLive()
+    {
+        if (_lives < 3)
+        {
+            _lives++;
+            if (_lives == 2)
+            {
+                _fireBallDamaged[1].SetActive(false);
+            }
+            else if (_lives == 3)
+            {
+                _fireBallDamaged[0].SetActive(false);
+            }
+            _uiManager.UpdateLives(_lives);
+        }
 
     }
 }

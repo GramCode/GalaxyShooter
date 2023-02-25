@@ -536,7 +536,6 @@ MonoBehaviour:
   _lives: 3
   _laserPrefab: {fileID: 3447305525719718427, guid: 48e71e4ead7eb4637a0cd6f9c09d8508, type: 3}
   _trippleShotPrefab: {fileID: 6832674826992436412, guid: 68cf6d061ac62491380c68b57bef3f83, type: 3}
-  _trippleShotPowerUp: {fileID: 581714895718332740, guid: 98ed0b28d6cfe4441a462d7fc2d8cc0b, type: 3}
   _shieldGameObject: {fileID: 1843241956}
   _explosionPrefab: {fileID: 93922394887139743, guid: e482fff6f90024fad8d2f2ab7a7e381a, type: 3}
   _audioClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
@@ -948,6 +947,7 @@ MonoBehaviour:
   - {fileID: 6366642749142696174, guid: 098522a5ed20248bcb37d4c594b1b2a7, type: 3}
   - {fileID: 7964672423786858297, guid: 7933a2f6e148d417e9d3230773222947, type: 3}
   - {fileID: 2312934356475897383, guid: aa4744dc812f84e19ad7fa081747e67b, type: 3}
+  - {fileID: 1033542393631251793, guid: c1a9c1f7f2bbc4b259595cc4b483320b, type: 3}
 --- !u!1 &643614645
 GameObject:
   m_ObjectHideFlags: 0
