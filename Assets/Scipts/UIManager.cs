@@ -59,13 +59,11 @@ public class UIManager : MonoBehaviour
 
     void GameOverSequence()
     {
-
         _gameManager.GameOver();
 
         _gameOverText.gameObject.SetActive(true);
         _resetSceneText.gameObject.SetActive(true);
         StartCoroutine(GameOverFlickerRoutine());
-        
     }
 
     IEnumerator GameOverFlickerRoutine()

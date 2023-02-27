@@ -483,7 +483,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 366640811}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -1.311, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -536,6 +536,7 @@ MonoBehaviour:
   _lives: 3
   _laserPrefab: {fileID: 3447305525719718427, guid: 48e71e4ead7eb4637a0cd6f9c09d8508, type: 3}
   _trippleShotPrefab: {fileID: 6832674826992436412, guid: 68cf6d061ac62491380c68b57bef3f83, type: 3}
+  _spreadShotPrefab: {fileID: 3300914335225307704, guid: 092a82104e8c04bfc94bd05181e4e511, type: 3}
   _shieldGameObject: {fileID: 1843241956}
   _explosionPrefab: {fileID: 93922394887139743, guid: e482fff6f90024fad8d2f2ab7a7e381a, type: 3}
   _audioClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
@@ -948,6 +949,7 @@ MonoBehaviour:
   - {fileID: 7964672423786858297, guid: 7933a2f6e148d417e9d3230773222947, type: 3}
   - {fileID: 2312934356475897383, guid: aa4744dc812f84e19ad7fa081747e67b, type: 3}
   - {fileID: 1033542393631251793, guid: c1a9c1f7f2bbc4b259595cc4b483320b, type: 3}
+  - {fileID: 3437180734904643641, guid: 03365c648ff3e441190587db6de2d8ae, type: 3}
 --- !u!1 &643614645
 GameObject:
   m_ObjectHideFlags: 0

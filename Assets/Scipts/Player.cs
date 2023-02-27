@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField] private int _lives = 3;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _trippleShotPrefab;
+    [SerializeField] private GameObject _spreadShotPrefab;
     [SerializeField] private GameObject _shieldGameObject;
     [SerializeField] private GameObject _explosionPrefab;
     [SerializeField] private AudioClip _audioClip; 
@@ -22,10 +23,10 @@ public class Player : MonoBehaviour
     private float _fireRate = 0.5f;
     private float _canFire = -1f;
 
-    private bool _isTrippleShotActive = false;
+    private bool _isTripleShotActive = false;
     private bool _isSpeedBoostActive = false;
     private bool _isShieldActive = false;
-    //private bool _collectedAmmo = false;
+    private bool _isSpreadShotActive = false;
 
     private int _score;
     private int _shieldLives = 3;
@@ -33,7 +34,6 @@ public class Player : MonoBehaviour
     private int _ammoCount = 15;
     private int _uiLasersCount;
     private bool _isNoAmmoTextDisplaying = false;
-
 
     private void Start()
     {
@@ -103,10 +103,15 @@ public class Player : MonoBehaviour
 
             else
             {
-                if (_isTrippleShotActive)
+                if (_isTripleShotActive)
                 {
                     //Fire three lasers
                     Instantiate(_trippleShotPrefab, transform.position, Quaternion.identity);
+                }
+                else if (_isSpreadShotActive)
+                {
+                    //Fire spread shot
+                    Instantiate(_spreadShotPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
                 }
                 else
                 {
@@ -267,14 +272,24 @@ public class Player : MonoBehaviour
     
     public void TripleShotActive()
     {
-        _isTrippleShotActive = true;
+        _isTripleShotActive = true;
         StartCoroutine(TripleShotPowerDownRoutine());
     }
 
     IEnumerator TripleShotPowerDownRoutine()
     {
         yield return new WaitForSeconds(5.0f);
-        _isTrippleShotActive = false;
+        _isTripleShotActive = false;
+    }
+
+    public bool GetTripleShotActive()
+    {
+        return _isTripleShotActive;
+    }
+
+    public void TripleShotNotActive()
+    {
+        _isTripleShotActive = false;
     }
 
     public void SpeedBoostActive()
@@ -313,6 +328,7 @@ public class Player : MonoBehaviour
             _uiManager.HideNoAmmoText();
             _isNoAmmoTextDisplaying = false;
         }
+        
         _ammoCount = 15;
         _uiLasersCount = 0;
         _uiManager.SetTextColor(Color.green);
@@ -337,5 +353,27 @@ public class Player : MonoBehaviour
             _uiManager.UpdateLives(_lives);
         }
 
+    }
+
+    public void SpreadShotActive()
+    {
+        _isSpreadShotActive = true;
+        StartCoroutine(SpreadShotPowerDownRoutine());
+    }
+
+    IEnumerator SpreadShotPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);
+        _isSpreadShotActive = false;
+    }
+
+    public bool GetSpreadShotActive()
+    {
+        return _isSpreadShotActive;
+    }
+
+    public void SpreadShotNotActive()
+    {
+        _isSpreadShotActive = false;
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class PowerUp : MonoBehaviour
 {
     [SerializeField] private float _speed = 3.0f;
-    [SerializeField] private int _powerupID; //0 = Triple Shot, 1 = Speed, 2 = Shields, 3 = Bullets
+    [SerializeField] private int _powerupID; //0 = Triple Shot, 1 = Speed, 2 = Shields, 3 = Bullets, 4 = life, 5 = spread shot
     [SerializeField] private AudioClip _clip;
 
     void Update()
@@ -38,6 +38,10 @@ public class PowerUp : MonoBehaviour
                 switch (_powerupID)
                 {
                     case 0:
+                        if (player.GetSpreadShotActive())
+                        {
+                            player.SpreadShotNotActive();
+                        }
                         player.TripleShotActive();
                         break;
                     case 1:
@@ -52,6 +56,13 @@ public class PowerUp : MonoBehaviour
                         break;
                     case 4:
                         player.AddLive();
+                        break;
+                    case 5:
+                        if (player.GetTripleShotActive())
+                        {
+                            player.TripleShotNotActive();
+                        }
+                        player.SpreadShotActive();
                         break;
                 }
                 

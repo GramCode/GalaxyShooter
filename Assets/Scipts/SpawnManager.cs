@@ -11,6 +11,8 @@ public class SpawnManager : MonoBehaviour
     private Vector3 _posToSpawnEnemy;
     private Vector3 _posToSpawnPowerup;
     private bool _stopSpawning = false;
+    private int _percent;
+
 
     void Start()
     {
@@ -54,15 +56,39 @@ public class SpawnManager : MonoBehaviour
 
         while (_stopSpawning == false)
         {
-            int randomPowerup = Random.Range(0, 5);
-            Instantiate(_powerups[randomPowerup], _posToSpawnPowerup, Quaternion.identity);
+            //int randomPowerup = Random.Range(0, 5);
+            
+
+            Instantiate(_powerups[GetPowerup()], _posToSpawnPowerup, Quaternion.identity);
             yield return new WaitForSeconds(Random.Range(3, 8));
         }
         
+    }
+
+
+    private int GetPowerup()
+    {
+        _percent = Random.Range(0, 10);
+
+        int randomPowerup;
+        if (_percent < 9)
+        {
+            //percent is 90
+            randomPowerup = Random.Range(0, 5);
+        }
+        else
+        {
+            //percent is 10
+            randomPowerup = 5;
+        }
+
+        return randomPowerup;
     }
 
     public void OnPlayerDeath()
     {
         _stopSpawning = true;
     }
+
+  
 }
