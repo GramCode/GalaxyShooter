@@ -11,14 +11,20 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image _livesImage;
     [SerializeField] private TMP_Text _gameOverText;
     [SerializeField] private TMP_Text _resetSceneText;
-
     [SerializeField] private TMP_Text _ammoText;
     [SerializeField] private TMP_Text _noAmmoText;
+
+    [SerializeField] private Image _barImage;
+
     [SerializeField] private List<GameObject> _laserImageUI;
 
     private GameManager _gameManager;
     private Player _player;
 
+    private bool _shouldEmptyBar = false;
+    private bool _shouldStopFillingUpBar = false;
+    private bool _isFillingUpBar = false;
+    
     void Start()
     { 
         _scoreText.text = "Score: " + 0;
@@ -42,6 +48,7 @@ public class UIManager : MonoBehaviour
         _ammoText.color = Color.green;
     }
 
+
     public void UpdateScore(int playerScore)
     {
         _scoreText.text = "Score: " + playerScore.ToString();
@@ -49,12 +56,13 @@ public class UIManager : MonoBehaviour
 
     public void UpdateLives(int currentLives)
     {
-        _livesImage.sprite = _liveSprites[currentLives];
 
         if (currentLives == 0)
         {
             GameOverSequence();
         }
+        _livesImage.sprite = _liveSprites[currentLives];
+
     }
 
     void GameOverSequence()
@@ -122,5 +130,59 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void UpdateBar(bool leftShiftPressed)
+    {
+        if (leftShiftPressed == true)
+        {
+            _shouldStopFillingUpBar = true;
+            _shouldEmptyBar = true;
+            _player.CanSpeedUp(true);
+            StartCoroutine(EmptyBarRoutine());
+        }
+        else
+        {
+            StartFillingUpBar();
+        }
+    }
 
+    private void StartFillingUpBar()
+    {
+        _shouldEmptyBar = false;
+        _shouldStopFillingUpBar = false;
+        _player.CanSpeedUp(false);
+
+        if (!_isFillingUpBar)
+            StartCoroutine(FillUpBarRoutine());
+    }
+
+    IEnumerator EmptyBarRoutine()
+    {
+        while (_shouldEmptyBar)
+        {
+            yield return new WaitForEndOfFrame();
+            _barImage.fillAmount -= 0.002f;
+
+            if (_barImage.fillAmount == 0)
+            {
+                StartFillingUpBar();
+            }
+        }        
+    }
+
+    IEnumerator FillUpBarRoutine()
+    {
+        _isFillingUpBar = true;
+        yield return new WaitForSeconds(0.5f);
+        while (!_shouldStopFillingUpBar)
+        {
+            yield return new WaitForEndOfFrame();
+            _barImage.fillAmount += 0.001f;
+
+            if (_barImage.fillAmount == 1)
+            {
+                _shouldStopFillingUpBar = true;
+            }
+        }
+        _isFillingUpBar = false;
+    }
 }

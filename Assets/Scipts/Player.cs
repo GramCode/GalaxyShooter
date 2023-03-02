@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _spreadShotPrefab;
     [SerializeField] private GameObject _shieldGameObject;
     [SerializeField] private GameObject _explosionPrefab;
+    [SerializeField] private GameObject _thruster;
     [SerializeField] private AudioClip _audioClip; 
     [SerializeField] private GameObject[] _fireBallDamaged;
     [SerializeField] private List<Material> _shieldMaterials;
@@ -27,13 +28,14 @@ public class Player : MonoBehaviour
     private bool _isSpeedBoostActive = false;
     private bool _isShieldActive = false;
     private bool _isSpreadShotActive = false;
+    private bool _isNoAmmoTextDisplaying = false;
+
+    private bool _canSpeedUp = true;
 
     private int _score;
     private int _shieldLives = 3;
-
     private int _ammoCount = 15;
     private int _uiLasersCount;
-    private bool _isNoAmmoTextDisplaying = false;
 
     private void Start()
     {
@@ -79,10 +81,12 @@ public class Player : MonoBehaviour
         if (_isSpeedBoostActive)
         {
             transform.Translate(distance * (_speed * _speedMultiplier) * Time.deltaTime, 0);
+            _thruster.SetActive(true);
         }
         else
         {
             transform.Translate(distance * _speed * Time.deltaTime, 0);
+            _thruster.SetActive(false);
         }
     }
 
@@ -172,14 +176,17 @@ public class Player : MonoBehaviour
     private void SpeedRate()
     {
 
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (Input.GetKeyDown(KeyCode.LeftShift) )
         {
+            _uiManager.UpdateBar(true);
             _isSpeedBoostActive = true;
+            
         }
 
-        if (Input.GetKeyUp(KeyCode.LeftShift))
+        else if (Input.GetKeyUp(KeyCode.LeftShift) )
         {
             _isSpeedBoostActive = false;
+            _uiManager.UpdateBar(false);
         }
     }
 
@@ -375,5 +382,19 @@ public class Player : MonoBehaviour
     public void SpreadShotNotActive()
     {
         _isSpreadShotActive = false;
+    }
+
+    public void CanSpeedUp(bool canSpeed)
+    {
+        _canSpeedUp = canSpeed;
+
+        if (!_canSpeedUp)
+        {
+            _isSpeedBoostActive = false;
+        }
+        else
+        {
+            _isSpeedBoostActive = true;
+        }
     }
 }
