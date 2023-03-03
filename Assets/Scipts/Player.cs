@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
 
     private SpawnManager _spawnManager;
     private UIManager _uiManager;
+    private CameraBehavior _camera;
+
     private AudioSource _audioSource;
 
     private float _speedMultiplier = 2f;
@@ -59,6 +61,13 @@ public class Player : MonoBehaviour
         else
         {
             _audioSource.clip = _audioClip;
+        }
+
+        _camera = GameObject.Find("Main Camera").GetComponent<CameraBehavior>();
+
+        if (_camera == null)
+        {
+            Debug.LogError("The Camera is NULL");
         }
    
     }
@@ -175,7 +184,6 @@ public class Player : MonoBehaviour
 
     private void SpeedRate()
     {
-
         if (Input.GetKeyDown(KeyCode.LeftShift) )
         {
             _uiManager.UpdateBar(true);
@@ -198,7 +206,9 @@ public class Player : MonoBehaviour
             ShieldLives();
             return;
         }
-        
+
+        _camera.ShakeCamera();
+
         _lives--;
 
         if (_lives == 2)
@@ -210,7 +220,8 @@ public class Player : MonoBehaviour
             _fireBallDamaged[1].SetActive(true);
         }
 
-        _uiManager.UpdateLives(_lives);
+        if (_lives >= 0)
+            _uiManager.UpdateLives(_lives);
 
         if (_lives < 1)
         {
