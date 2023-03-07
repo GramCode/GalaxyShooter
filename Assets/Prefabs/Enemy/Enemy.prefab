@@ -49,9 +49,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32df9dcae228b418eb2041964e579d21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 4
+  _speed: 3
   _laserPrefab: {fileID: 6023498584619742160, guid: 4e72494dbe0ad49a289a4e5cb1258f3a, type: 3}
   _laserAudioClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
+  _waypoints:
+  - {fileID: 3386873883988552755, guid: 00a3e52ecaa1a47aca25e8cb2c617612, type: 3}
+  - {fileID: 6609240692685352020, guid: 76a3218f89d93446dbc1cd09680a9877, type: 3}
+  - {fileID: 5622068152262604441, guid: 4c0a302e866b24187a17058ed13bfc9b, type: 3}
+  - {fileID: 2997302668662758761, guid: ea12fd871485347bd8d11b77811af3fc, type: 3}
 --- !u!212 &302729405384315550
 SpriteRenderer:
   m_ObjectHideFlags: 0

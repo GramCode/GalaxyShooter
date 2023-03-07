@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private float _speed = 4.0f;
+    [SerializeField] private float _speed = 3.0f;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private AudioClip _laserAudioClip;
+    //[SerializeField] private GameObject _waypointsContainer;
+    //[SerializeField] private List<GameObject> _waypoints;
 
     private AudioSource _audioSource;
     private Player _player;
@@ -16,6 +18,11 @@ public class Enemy : MonoBehaviour
     private float _fireRate = 3.0f;
     private float _canShoot = -1;
     private bool _isDestroyed = false;
+    private bool _completedCicle = false;
+    private int _waypointIndex;
+    private int _waypointsCount;
+
+    private GameObject[] _waypoints = new GameObject[4];
 
     private void Start()
     {
@@ -43,11 +50,25 @@ public class Enemy : MonoBehaviour
             Debug.LogError("Enemy collider is NULL");
         }
 
+        _waypoints[0] = new GameObject("waypoint 1");
+        _waypoints[1] = new GameObject("waypoint 2");
+        _waypoints[2] = new GameObject("waypoint 3");
+        _waypoints[3] = new GameObject("waypoint 4");
+
+        float enemyValueX = transform.position.x;
+
+        _waypoints[0].transform.position = new Vector3(enemyValueX, 4.0f, 0);
+        _waypoints[1].transform.position = new Vector3(enemyValueX - 2.0f, 2.0f, 0);
+        _waypoints[2].transform.position = new Vector3(enemyValueX, 0, 0);
+        _waypoints[3].transform.position = new Vector3(enemyValueX + 2.0f, 2.0f, 0);
+
+       
     }
 
     void Update()
     {
         EnemyBehavior();
+
         if (!_isDestroyed)
         {
             FireLaser();
@@ -57,13 +78,72 @@ public class Enemy : MonoBehaviour
 
     void EnemyBehavior()
     {
-        transform.Translate(Vector3.down * _speed * Time.deltaTime);
+        if (transform.position.y > _waypoints[0].transform.position.y )
+        {
+            transform.Translate(Vector3.down * _speed * Time.deltaTime);
+        }
+        else
+        {
+            if (_completedCicle)
+            {
+                transform.Translate(Vector3.down * _speed * Time.deltaTime);
+            }
+            else
+            {
+                NewMovement();
+            }
+            
+        }
+       
 
         if (transform.position.y < -5.6f)
         {
             float randomX = Random.Range(-9, 9);
             transform.position = new Vector3(randomX, 7.5f, 0);
+            WaypointsX(randomX);
+            _completedCicle = false;
         }
+    }
+
+    private void NewMovement()
+    {
+       
+        if (Vector2.Distance(transform.position, _waypoints[_waypointIndex].transform.position) < 0.1f)
+        {
+            Debug.Log("current waypoint " + _waypointIndex);
+           
+
+            if (_waypointIndex >= 3)
+            {
+                _waypointIndex = 0;
+            }
+            else
+            {
+                _waypointsCount++;
+                _waypointIndex++;
+            }
+
+            if (_waypointsCount == 4)
+            {
+                _completedCicle = true;
+                _waypointsCount = 0;
+            }
+                        
+        }
+
+        var currentWaypoint = _waypoints[_waypointIndex];
+        transform.position = Vector2.MoveTowards(transform.position, currentWaypoint.transform.position, _speed * Time.deltaTime);
+
+    }
+
+    private void WaypointsX(float randX)
+    {
+        _waypointIndex = 0;
+        _waypointsCount = 0;
+        _waypoints[0].transform.position = new Vector3(randX, 4.0f, 0);
+        _waypoints[1].transform.position = new Vector3(randX - 2.0f, 2.0f, 0);
+        _waypoints[2].transform.position = new Vector3(randX, 0, 0);
+        _waypoints[3].transform.position = new Vector3(randX + 2.0f, 2.0f, 0);
     }
 
 
