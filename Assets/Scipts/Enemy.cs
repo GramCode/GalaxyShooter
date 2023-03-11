@@ -7,22 +7,26 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _speed = 3.0f;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private AudioClip _laserAudioClip;
-    //[SerializeField] private GameObject _waypointsContainer;
-    //[SerializeField] private List<GameObject> _waypoints;
 
     private AudioSource _audioSource;
     private Player _player;
     private Collider2D _collider2D;
     private Animator _anim;
-
     private float _fireRate = 3.0f;
     private float _canShoot = -1;
     private bool _isDestroyed = false;
+
     private bool _completedCicle = false;
     private int _waypointIndex;
     private int _waypointsCount;
+    static private int _enemiesEliminated;
 
     private GameObject[] _waypoints = new GameObject[4];
+    private GameObject _container;
+    private SpawnManager _spawnManger;
+    private GameManager _gameManager;
+    private Waves _waves;
+    private bool _isWaypointDestroyed = false;
 
     private void Start()
     {
@@ -50,6 +54,26 @@ public class Enemy : MonoBehaviour
             Debug.LogError("Enemy collider is NULL");
         }
 
+        _spawnManger = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
+        if (_spawnManger == null)
+        {
+            Debug.LogError("Spawn Manager in Enemy is NULL");
+        }
+
+        _gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        if (_gameManager == null)
+        {
+            Debug.LogError("Game Manager in Enemy is NULL");
+        }
+
+        _waves = GameObject.Find("Waves").GetComponent<Waves>();
+        if (_waves == null)
+        {
+            Debug.LogError("Waves in Enemy is NULL");
+        }
+
+        //_container = new GameObject("Container");
+        _container = GameObject.Find("Waypoints Container");
         _waypoints[0] = new GameObject("waypoint 1");
         _waypoints[1] = new GameObject("waypoint 2");
         _waypoints[2] = new GameObject("waypoint 3");
@@ -62,7 +86,12 @@ public class Enemy : MonoBehaviour
         _waypoints[2].transform.position = new Vector3(enemyValueX, 0, 0);
         _waypoints[3].transform.position = new Vector3(enemyValueX + 2.0f, 2.0f, 0);
 
-       
+        foreach(var waypoint in _waypoints)
+        {
+            waypoint.transform.parent = _container.transform;
+        }
+
+        _isWaypointDestroyed = false;
     }
 
     void Update()
@@ -73,12 +102,25 @@ public class Enemy : MonoBehaviour
         {
             FireLaser();
         }
+        if (!_gameManager.HaveCompletedGame())
+        {
+            if (_enemiesEliminated == _waves.waves[_spawnManger.GetCurrentWave()].GetEnemiesInWave())
+            {
+                _spawnManger.CompletedWave();
+                _enemiesEliminated = 0;
+
+                if (_waves.waves.Count == _spawnManger.GetCurrentWave())
+                {
+                    _gameManager.CompletedGame();
+                }
+            }
+        }
         
     }
 
     void EnemyBehavior()
     {
-        if (transform.position.y > _waypoints[0].transform.position.y )
+        if (transform.position.y > 4.0f)
         {
             transform.Translate(Vector3.down * _speed * Time.deltaTime);
         }
@@ -92,9 +134,9 @@ public class Enemy : MonoBehaviour
             {
                 NewMovement();
             }
-            
+
         }
-       
+
 
         if (transform.position.y < -5.6f)
         {
@@ -103,47 +145,38 @@ public class Enemy : MonoBehaviour
             WaypointsX(randomX);
             _completedCicle = false;
         }
+
     }
 
     private void NewMovement()
     {
-       
-        if (Vector2.Distance(transform.position, _waypoints[_waypointIndex].transform.position) < 0.1f)
+        if (!_isWaypointDestroyed)
         {
-            Debug.Log("current waypoint " + _waypointIndex);
-           
+            if (Vector2.Distance(transform.position, _waypoints[_waypointIndex].transform.position) < 0.1f)
+            {
+                if (_waypointIndex >= 3)
+                {
+                    _waypointIndex = 0; ;
+                }
+                else
+                {
+                    _waypointsCount++;
+                    _waypointIndex++;
+                }
 
-            if (_waypointIndex >= 3)
-            {
-                _waypointIndex = 0;
-            }
-            else
-            {
-                _waypointsCount++;
-                _waypointIndex++;
+                if (_waypointsCount == 4)
+                {
+                    _completedCicle = true;
+                    _waypointsCount = 0;
+                }
+
             }
 
-            if (_waypointsCount == 4)
-            {
-                _completedCicle = true;
-                _waypointsCount = 0;
-            }
-                        
+            var currentWaypoint = _waypoints[_waypointIndex];
+            transform.position = Vector2.MoveTowards(transform.position, currentWaypoint.transform.position, _speed * Time.deltaTime);
+
         }
 
-        var currentWaypoint = _waypoints[_waypointIndex];
-        transform.position = Vector2.MoveTowards(transform.position, currentWaypoint.transform.position, _speed * Time.deltaTime);
-
-    }
-
-    private void WaypointsX(float randX)
-    {
-        _waypointIndex = 0;
-        _waypointsCount = 0;
-        _waypoints[0].transform.position = new Vector3(randX, 4.0f, 0);
-        _waypoints[1].transform.position = new Vector3(randX - 2.0f, 2.0f, 0);
-        _waypoints[2].transform.position = new Vector3(randX, 0, 0);
-        _waypoints[3].transform.position = new Vector3(randX + 2.0f, 2.0f, 0);
     }
 
 
@@ -160,6 +193,16 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private void WaypointsX(float randX)
+    {
+        _waypointIndex = 0;
+        _waypointsCount = 0;
+        _waypoints[0].transform.position = new Vector3(randX, 4.0f, 0);
+        _waypoints[1].transform.position = new Vector3(randX - 2.0f, 2.0f, 0);
+        _waypoints[2].transform.position = new Vector3(randX, 0, 0);
+        _waypoints[3].transform.position = new Vector3(randX + 2.0f, 2.0f, 0);
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Player")
@@ -170,6 +213,8 @@ public class Enemy : MonoBehaviour
             _anim.SetTrigger("OnEnemyDeath");
             _speed = 0;
             _isDestroyed = true;
+            _enemiesEliminated++;
+            DestroyWaypointsGameObjects();
             _audioSource.Play();
             Destroy(_collider2D);
             Destroy(this.gameObject, 2.8f);
@@ -183,15 +228,29 @@ public class Enemy : MonoBehaviour
             _anim.SetTrigger("OnEnemyDeath");
             _speed = 0;
             _isDestroyed = true;
+            _enemiesEliminated++;
+            DestroyWaypointsGameObjects();
             _audioSource.Play();
             Destroy(_collider2D);
             Destroy(this.gameObject, 2.8f);
             Destroy(other.gameObject);
         }
 
-        
+
     }
 
-    
+    private void DestroyWaypointsGameObjects()
+    {
+        foreach (var waypoint in _waypoints)
+        {
+            Destroy(waypoint);
+        }
+        _isWaypointDestroyed = true;
+    }
+
+    public int EliminatedEnemies()
+    {
+        return _enemiesEliminated;
+    }
     
 }

@@ -6,10 +6,11 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     private bool _isGameOver = false;
+    private bool _completedGame = false;
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R) && _isGameOver)
+        if (Input.GetKeyDown(KeyCode.R) && _isGameOver || Input.GetKeyDown(KeyCode.R) && _completedGame)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
@@ -23,5 +24,15 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         _isGameOver = true;
+    }
+
+    public void CompletedGame()
+    {
+        _completedGame = true;
+    }
+
+    public bool HaveCompletedGame()
+    {
+        return _completedGame;
     }
 }

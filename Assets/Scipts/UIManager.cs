@@ -13,9 +13,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text _resetSceneText;
     [SerializeField] private TMP_Text _ammoText;
     [SerializeField] private TMP_Text _noAmmoText;
-
+    [SerializeField] private TMP_Text _wavesText;
     [SerializeField] private Image _barImage;
-
     [SerializeField] private List<GameObject> _laserImageUI;
 
     private GameManager _gameManager;
@@ -24,12 +23,15 @@ public class UIManager : MonoBehaviour
     private bool _shouldEmptyBar = false;
     private bool _shouldStopFillingUpBar = false;
     private bool _isFillingUpBar = false;
+    private bool _isWavesTextShowing = false;
     
     void Start()
     { 
         _scoreText.text = "Score: " + 0;
         _gameOverText.gameObject.SetActive(false);
         _resetSceneText.gameObject.SetActive(false);
+        _noAmmoText.gameObject.SetActive(false);
+        _wavesText.gameObject.SetActive(false);
 
         _gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
 
@@ -68,8 +70,8 @@ public class UIManager : MonoBehaviour
     void GameOverSequence()
     {
         _gameManager.GameOver();
-
         _gameOverText.gameObject.SetActive(true);
+        _resetSceneText.text = "Press the 'R' key to restart the level";
         _resetSceneText.gameObject.SetActive(true);
         StartCoroutine(GameOverFlickerRoutine());
     }
@@ -110,7 +112,7 @@ public class UIManager : MonoBehaviour
 
     public void UpdateAmmoText(int ammoCount)
     {
-        _ammoText.text = ammoCount.ToString();
+        _ammoText.text = ammoCount.ToString() + " / 15";
     }
 
     public void DisplayNoAmmoText()
@@ -184,5 +186,41 @@ public class UIManager : MonoBehaviour
             }
         }
         _isFillingUpBar = false;
+    }
+
+    public void UpdateAndDisplayWaveText(int wave)
+    {
+        _wavesText.text = "Wave " + wave;
+        _wavesText.gameObject.SetActive(true);
+        _isWavesTextShowing = true;
+        StartCoroutine(WavesFlickerRoutine(wave));
+        StartCoroutine(HideWavesTextRoutine());
+    }
+
+    IEnumerator HideWavesTextRoutine()
+    {
+        yield return new WaitForSeconds(5.5f);
+        _wavesText.gameObject.SetActive(false);
+        _isWavesTextShowing = false;
+    }
+
+    IEnumerator WavesFlickerRoutine(int wave)
+    {
+        while (_isWavesTextShowing)
+        {
+            _wavesText.text = "Wave " + wave;
+            yield return new WaitForSeconds(0.5f);
+            _wavesText.text = "";
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+
+    public void AllWavesCompleted()
+    {
+        _wavesText.text = "All waves completed!";
+        _wavesText.gameObject.SetActive(true);
+        _resetSceneText.text = "Press the 'R' key to restart the game";
+        _resetSceneText.gameObject.SetActive(true);
+        _gameManager.CompletedGame();
     }
 }
