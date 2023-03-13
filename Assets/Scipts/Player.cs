@@ -296,7 +296,6 @@ public class Player : MonoBehaviour
 
     public void ResetShieldLives()
     {
-        //_shieldGameObject.SetActive(true);
         _shieldLives = 3;
         _shieldGameObject.GetComponent<SpriteRenderer>().material = _shieldMaterials[2];
     }

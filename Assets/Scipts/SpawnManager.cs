@@ -14,7 +14,6 @@ public class SpawnManager : MonoBehaviour
     private bool _stopSpawningPowerup = false;
     private Waves _wavesObj;
     private UIManager _uIManager;
-    private Enemy _enemy;
 
     public static int CurrentWave { get; private set; }
     public static int EnemiesSpawned { get; private set; }
@@ -23,6 +22,7 @@ public class SpawnManager : MonoBehaviour
     {
         _posToSpawnEnemy = new Vector3(Random.Range(-8f, 8f), 7, 0);
         _posToSpawnPowerup = new Vector3(Random.Range(-8f, 8f), 7, 0);
+
         _wavesObj = GameObject.Find("Waves").GetComponent<Waves>();
         if(_wavesObj == null)
         {
@@ -33,12 +33,6 @@ public class SpawnManager : MonoBehaviour
         if(_uIManager == null)
         {
             Debug.LogError("UI Manager in Spawn Manager is NULL");
-        }
-
-        _enemy = _enemyPrefab.GetComponent<Enemy>();
-        if (_enemy == null)
-        {
-            Debug.LogError("Enemy in Spawn Manager is NULL");
         }
 
         CurrentWave = 0;
@@ -67,21 +61,18 @@ public class SpawnManager : MonoBehaviour
 
         while (_stopSpawningEnemy == false)
         {
-            Debug.Log("CurrentWave: " + CurrentWave);
             if (EnemiesSpawned < _wavesObj.waves[CurrentWave].GetEnemiesInWave())
             {
                 EnemiesSpawned++;
-                Debug.Log("Enemies spawned: " + EnemiesSpawned);
                 GameObject newEnemy = Instantiate(_enemyPrefab, _posToSpawnEnemy, Quaternion.identity);
                 newEnemy.transform.parent = _enemyContainer.transform;
                 
             }
             else
             {
-                _stopSpawningEnemy = true;
-                
-                
+                _stopSpawningEnemy = true;                
             }
+
             yield return new WaitForSeconds(5.0f);
         }
     }
@@ -92,7 +83,7 @@ public class SpawnManager : MonoBehaviour
 
         while (_stopSpawningPowerup == false)
         {
-            Instantiate(_powerups[2], _posToSpawnPowerup, Quaternion.identity);
+            Instantiate(_powerups[GetPowerupIndex()], _posToSpawnPowerup, Quaternion.identity);
             yield return new WaitForSeconds(Random.Range(3, 8));
         }
         
