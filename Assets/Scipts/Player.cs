@@ -146,7 +146,7 @@ public class Player : MonoBehaviour
                     Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
                 }
 
-                if (_asterioid.HasDestroyedLaser)
+                if (_asterioid.HasDestroyedAsteroid)
                 {
                     _ammoCount--;
                     _uiManager.UpdateAmmoText(_ammoCount);
@@ -173,9 +173,6 @@ public class Player : MonoBehaviour
                     }
                 }
                 
-
-                
-
                 _audioSource.Play();
             }
         }
@@ -281,24 +278,25 @@ public class Player : MonoBehaviour
         {
             if (_shieldLives == 2)
             {
-                seconds1 = 1.0f;
-                seconds2 = 0.1f;
+                seconds1 = 0.1f;
+                seconds2 = 1.0f;
             }
             else
             {
-                seconds1 = 0.5f;
-                seconds2 = 0.1f;
+                seconds1 = 0.1f;
+                seconds2 = 0.5f;
             }
 
-            _shieldGameObject.SetActive(true);
-            yield return new WaitForSeconds(seconds1);
             _shieldGameObject.SetActive(false);
+            yield return new WaitForSeconds(seconds1);
+            _shieldGameObject.SetActive(true);
             yield return new WaitForSeconds(seconds2);
         }
     }
 
     public void ResetShieldLives()
     {
+        //_shieldGameObject.SetActive(true);
         _shieldLives = 3;
         _shieldGameObject.GetComponent<SpriteRenderer>().material = _shieldMaterials[2];
     }

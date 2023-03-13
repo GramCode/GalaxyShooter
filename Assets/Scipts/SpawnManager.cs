@@ -12,17 +12,36 @@ public class SpawnManager : MonoBehaviour
     private Vector3 _posToSpawnPowerup;
     private bool _stopSpawningEnemy = false;
     private bool _stopSpawningPowerup = false;
-    private int _enemiesSpawned;
-    private int _currentWave;
     private Waves _wavesObj;
     private UIManager _uIManager;
+    private Enemy _enemy;
+
+    public static int CurrentWave { get; private set; }
+    public static int EnemiesSpawned { get; private set; }
 
     void Start()
     {
         _posToSpawnEnemy = new Vector3(Random.Range(-8f, 8f), 7, 0);
         _posToSpawnPowerup = new Vector3(Random.Range(-8f, 8f), 7, 0);
         _wavesObj = GameObject.Find("Waves").GetComponent<Waves>();
+        if(_wavesObj == null)
+        {
+            Debug.LogError("Waves in SpawnManager is NULL");
+        }
+
         _uIManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        if(_uIManager == null)
+        {
+            Debug.LogError("UI Manager in Spawn Manager is NULL");
+        }
+
+        _enemy = _enemyPrefab.GetComponent<Enemy>();
+        if (_enemy == null)
+        {
+            Debug.LogError("Enemy in Spawn Manager is NULL");
+        }
+
+        CurrentWave = 0;
     }
 
     public void StartSpawning()
@@ -47,13 +66,15 @@ public class SpawnManager : MonoBehaviour
         yield return new WaitForSeconds(3.0f);
 
         while (_stopSpawningEnemy == false)
-        {            
-
-            if (_enemiesSpawned < _wavesObj.waves[_currentWave].GetEnemiesInWave())
+        {
+            Debug.Log("CurrentWave: " + CurrentWave);
+            if (EnemiesSpawned < _wavesObj.waves[CurrentWave].GetEnemiesInWave())
             {
-                _enemiesSpawned++;
+                EnemiesSpawned++;
+                Debug.Log("Enemies spawned: " + EnemiesSpawned);
                 GameObject newEnemy = Instantiate(_enemyPrefab, _posToSpawnEnemy, Quaternion.identity);
                 newEnemy.transform.parent = _enemyContainer.transform;
+                
             }
             else
             {
@@ -71,7 +92,7 @@ public class SpawnManager : MonoBehaviour
 
         while (_stopSpawningPowerup == false)
         {
-            Instantiate(_powerups[GetPowerupIndex()], _posToSpawnPowerup, Quaternion.identity);
+            Instantiate(_powerups[2], _posToSpawnPowerup, Quaternion.identity);
             yield return new WaitForSeconds(Random.Range(3, 8));
         }
         
@@ -104,10 +125,10 @@ public class SpawnManager : MonoBehaviour
     public void CompletedWave()
     {
         _stopSpawningEnemy = true;
-        _enemiesSpawned = 0;
-        _currentWave++;
+        EnemiesSpawned = 0;
+        CurrentWave++;
 
-        if (_currentWave >= _wavesObj.waves.Count)
+        if (CurrentWave >= _wavesObj.waves.Count)
         {
             _uIManager.AllWavesCompleted();
             _stopSpawningEnemy = true;
@@ -121,15 +142,10 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator WaveCoolDownRoutine()
     {
-        _uIManager.UpdateAndDisplayWaveText(_currentWave + 1);
-        yield return new WaitForSeconds(5.0f);
+        _uIManager.UpdateAndDisplayWaveText(CurrentWave + 1);
+        yield return new WaitForSeconds(2.5f);
         _stopSpawningEnemy = false;
         StartCoroutine(SpawnEnemyRoutine());
-    }
-
-    public int GetCurrentWave()
-    {
-        return _currentWave;
     }
 
     public void GameOver()

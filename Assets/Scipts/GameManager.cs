@@ -6,10 +6,11 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     private bool _isGameOver = false;
-    private bool _completedGame = false;
     private UIManager _uiManager;
     private SpawnManager _spawnManager;
     [SerializeField] private Enemy _enemy;
+
+    public bool GameCompleted { get; private set; }
 
     private void Start()
     {
@@ -25,18 +26,20 @@ public class GameManager : MonoBehaviour
             Debug.LogError("Spawn Manager in Game Manager is NULL");
         }
 
+        GameCompleted = false;
+
     }
 
     private void Update()
     {
-        if (_isGameOver || _completedGame)
+        if (_isGameOver || GameCompleted)
         {
             _uiManager.UpdateThrusterBarColor(false);
             _uiManager.StopDisplayingAllText();
             _spawnManager.GameOver();
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && _isGameOver || Input.GetKeyDown(KeyCode.R) && _completedGame)
+        if (Input.GetKeyDown(KeyCode.R) && _isGameOver || Input.GetKeyDown(KeyCode.R) && GameCompleted)
         {
             _enemy.ResetEliminatedEnemies();
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -55,26 +58,7 @@ public class GameManager : MonoBehaviour
 
     public void CompletedGame()
     {
-        _completedGame = true;
+        GameCompleted = true;
     }
 
-    public bool HaveCompletedGame()
-    {
-        return _completedGame;
-    }
-
-    public bool GameHasEnded()
-    {
-        if (_isGameOver)
-        {
-            return true;
-        }
-
-        if (_completedGame)
-        {
-            return true;
-        }
-
-        return false;
-    }
 }

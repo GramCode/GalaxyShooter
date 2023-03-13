@@ -65,7 +65,7 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if (_asteroid.HasDestroyedLaser)
+        if (_asteroid.HasDestroyedAsteroid)
         {
             _ammoText.gameObject.SetActive(true);
         }
@@ -252,7 +252,7 @@ public class UIManager : MonoBehaviour
 
     IEnumerator HideWavesTextRoutine()
     {
-        yield return new WaitForSeconds(5.5f);
+        yield return new WaitForSeconds(3.5f);
         _wavesText.gameObject.SetActive(false);
         _isWavesTextShowing = false;
     }

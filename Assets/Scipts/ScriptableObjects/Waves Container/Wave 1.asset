@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b25ebb167ce34e0bbecfd03e2656082, type: 3}
   m_Name: Wave 1
   m_EditorClassIdentifier: 
-  enemiesInWave: 4
+  enemiesInWave: 2

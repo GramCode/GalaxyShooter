@@ -19,7 +19,6 @@ public class Enemy : MonoBehaviour
     private bool _completedCicle = false;
     private int _waypointIndex;
     private int _waypointsCount;
-    static private int _enemiesEliminated;
 
     private GameObject[] _waypoints = new GameObject[4];
     private GameObject _container;
@@ -27,6 +26,8 @@ public class Enemy : MonoBehaviour
     private GameManager _gameManager;
     private Waves _waves;
     private bool _isWaypointDestroyed = false;
+
+    public static int EnemiesEliminated { get; private set; }
 
     private void Start()
     {
@@ -101,14 +102,15 @@ public class Enemy : MonoBehaviour
         {
             FireLaser();
         }
-        if (!_gameManager.HaveCompletedGame())
+        if (!_gameManager.GameCompleted)
         {
-            if (_enemiesEliminated == _waves.waves[_spawnManger.GetCurrentWave()].GetEnemiesInWave())
+            if (EnemiesEliminated == _waves.waves[SpawnManager.CurrentWave].GetEnemiesInWave())
             {
+                Debug.Log("CurrentWave enemies: " + _waves.waves[SpawnManager.CurrentWave].GetEnemiesInWave());
                 _spawnManger.CompletedWave();
-                _enemiesEliminated = 0;
+                EnemiesEliminated = 0;
 
-                if (_waves.waves.Count == _spawnManger.GetCurrentWave())
+                if (_waves.waves.Count == SpawnManager.CurrentWave)
                 {
                     _gameManager.CompletedGame();
                 }
@@ -212,7 +214,7 @@ public class Enemy : MonoBehaviour
             _anim.SetTrigger("OnEnemyDeath");
             _speed = 0;
             _isDestroyed = true;
-            _enemiesEliminated++;
+            EnemiesEliminated++;
             DestroyWaypointsGameObjects();
             _audioSource.Play();
             Destroy(_collider2D);
@@ -227,14 +229,13 @@ public class Enemy : MonoBehaviour
             _anim.SetTrigger("OnEnemyDeath");
             _speed = 0;
             _isDestroyed = true;
-            _enemiesEliminated++;
+            EnemiesEliminated++;
             DestroyWaypointsGameObjects();
             _audioSource.Play();
             Destroy(_collider2D);
             Destroy(this.gameObject, 2.8f);
             Destroy(other.gameObject);
         }
-
 
     }
 
@@ -247,13 +248,10 @@ public class Enemy : MonoBehaviour
         _isWaypointDestroyed = true;
     }
 
-    public int EliminatedEnemies()
-    {
-        return _enemiesEliminated;
-    }
 
     public void ResetEliminatedEnemies()
     {
-        _enemiesEliminated = 0;
+        EnemiesEliminated = 0;
     }
+
 }
