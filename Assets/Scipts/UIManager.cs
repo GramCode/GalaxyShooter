@@ -19,12 +19,17 @@ public class UIManager : MonoBehaviour
 
     private GameManager _gameManager;
     private Player _player;
+    private Asteroid _asteroid;
 
+    private bool _isNoAmmoTextActive = false;
+    private bool _routineRunning = false;
     private bool _shouldEmptyBar = false;
     private bool _shouldStopFillingUpBar = false;
     private bool _isFillingUpBar = false;
     private bool _isWavesTextShowing = false;
-    
+
+    private Color _thrusterBarColor;
+
     void Start()
     { 
         _scoreText.text = "Score: " + 0;
@@ -47,9 +52,24 @@ public class UIManager : MonoBehaviour
             Debug.LogError("Player is null in UIManager");
         }
 
+        _asteroid = GameObject.Find("Asteroid").GetComponent<Asteroid>();
+        if (_asteroid == null)
+        {
+            Debug.LogError("Asteroid in UIManager is NULL");
+        }
+
         _ammoText.color = Color.green;
+        _thrusterBarColor = _barImage.color;
+
     }
 
+    private void Update()
+    {
+        if (_asteroid.HasDestroyedLaser)
+        {
+            _ammoText.gameObject.SetActive(true);
+        }
+    }
 
     public void UpdateScore(int playerScore)
     {
@@ -94,12 +114,18 @@ public class UIManager : MonoBehaviour
 
     public void HideNoAmmoText()
     {
+        _isNoAmmoTextActive = false;
         _noAmmoText.gameObject.SetActive(false);
     }
 
     public void SetTextColor(Color color)
     {
         _ammoText.color = color;
+    }
+
+    public void AmmoTextActive()
+    {
+        _isNoAmmoTextActive = true;
     }
 
     public void DisplayBullets()
@@ -117,19 +143,26 @@ public class UIManager : MonoBehaviour
 
     public void DisplayNoAmmoText()
     {
-        _noAmmoText.gameObject.SetActive(true);
-        StartCoroutine(NoAmmoFlickerRoutine());
+        if (!_routineRunning)
+        {
+            _isNoAmmoTextActive = true;
+            _routineRunning = true;
+            _noAmmoText.gameObject.SetActive(true);
+            StartCoroutine(NoAmmoFlickerRoutine());
+        }
+        
     }
 
     IEnumerator NoAmmoFlickerRoutine()
     {
-        while (_player.IsDisplayingNoAmmoText())
+        while (_isNoAmmoTextActive)
         {
-            _noAmmoText.gameObject.SetActive(false);
-            yield return new WaitForSeconds(0.3f);
             _noAmmoText.gameObject.SetActive(true);
+            yield return new WaitForSeconds(0.3f);
+            _noAmmoText.gameObject.SetActive(false);
             yield return new WaitForSeconds(0.6f);
         }
+        _routineRunning = false;
     }
 
     public void UpdateBar(bool leftShiftPressed)
@@ -147,6 +180,18 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void EmptyBar(bool emptyBar)
+    {
+        if (emptyBar)
+        {
+            _shouldEmptyBar = true;
+        }
+        else
+        {
+            _shouldEmptyBar = false;
+        }
+    }
+
     private void StartFillingUpBar()
     {
         _shouldEmptyBar = false;
@@ -159,14 +204,22 @@ public class UIManager : MonoBehaviour
 
     IEnumerator EmptyBarRoutine()
     {
+       
         while (_shouldEmptyBar)
         {
+            
             yield return new WaitForEndOfFrame();
             _barImage.fillAmount -= 0.002f;
 
             if (_barImage.fillAmount == 0)
             {
                 StartFillingUpBar();
+            }
+
+            if (_player.GetNegativeSpeed())
+            {
+                _shouldEmptyBar = false;
+                ResetBar();
             }
         }        
     }
@@ -222,5 +275,35 @@ public class UIManager : MonoBehaviour
         _resetSceneText.text = "Press the 'R' key to restart the game";
         _resetSceneText.gameObject.SetActive(true);
         _gameManager.CompletedGame();
+        _noAmmoText.gameObject.SetActive(false);
+    }
+
+    public void UpdateThrusterBarColor(bool disabled)
+    {
+        if (disabled)
+        {
+            _barImage.color = Color.gray;
+        }
+        else
+        {
+            _barImage.color = _thrusterBarColor;
+        }
+    }
+
+    public void ResetBar()
+    {
+        _barImage.fillAmount = 1.0f;
+    }
+
+    public void StopDisplayingAllText()
+    {
+        _noAmmoText.gameObject.SetActive(false);
+        _wavesText.gameObject.SetActive(false);
+        _isNoAmmoTextActive = false;
+    }
+
+    public void AmmoCountEnabledOnStart()
+    {
+        _ammoText.text = "15 / 15";
     }
 }

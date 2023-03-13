@@ -19,8 +19,9 @@ public class Player : MonoBehaviour
     private SpawnManager _spawnManager;
     private UIManager _uiManager;
     private CameraBehavior _camera;
-
     private AudioSource _audioSource;
+    private GameManager _gameManager;
+    private Asteroid _asterioid;
 
     private float _speedMultiplier = 2f;
     private float _fireRate = 0.5f;
@@ -30,14 +31,14 @@ public class Player : MonoBehaviour
     private bool _isSpeedBoostActive = false;
     private bool _isShieldActive = false;
     private bool _isSpreadShotActive = false;
-    private bool _isNoAmmoTextDisplaying = false;
-
+    private bool _isNegativeSpeedActive = false;
     private bool _canSpeedUp = true;
 
     private int _score;
     private int _shieldLives = 3;
     private int _ammoCount = 15;
     private int _uiLasersCount;
+
 
     private void Start()
     {
@@ -69,7 +70,18 @@ public class Player : MonoBehaviour
         {
             Debug.LogError("The Camera is NULL");
         }
-   
+
+        _gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        if (_gameManager == null)
+        {
+            Debug.LogError("Game Manager in Player is NULL");
+        }
+
+        _asterioid = GameObject.Find("Asteroid").GetComponent<Asteroid>();
+        if(_asterioid == null)
+        {
+            Debug.LogError("Asteroid in Player is NULL");
+        }
     }
 
     private void Update()
@@ -92,6 +104,10 @@ public class Player : MonoBehaviour
             transform.Translate(distance * (_speed * _speedMultiplier) * Time.deltaTime, 0);
             _thruster.SetActive(true);
         }
+        else if (_isNegativeSpeedActive)
+        {
+            transform.Translate(distance * (_speed / _speedMultiplier) * Time.deltaTime, 0);
+        }
         else
         {
             transform.Translate(distance * _speed * Time.deltaTime, 0);
@@ -101,17 +117,15 @@ public class Player : MonoBehaviour
 
     private void ShootLaser()
     {
+        
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire) //Can fire equals 0.5s
         {
             _canFire = Time.time + _fireRate;
 
             if (_ammoCount == 0)
             {
-                if (!_isNoAmmoTextDisplaying)
-                {
-                    _isNoAmmoTextDisplaying = true;
-                    _uiManager.DisplayNoAmmoText();
-                }
+                _uiManager.AmmoTextActive();
+                _uiManager.DisplayNoAmmoText();
             }
 
             else
@@ -123,7 +137,7 @@ public class Player : MonoBehaviour
                 }
                 else if (_isSpreadShotActive)
                 {
-                    //Fire spread shot
+                    //Fire spread shot (five spread lasers)
                     Instantiate(_spreadShotPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
                 }
                 else
@@ -132,29 +146,35 @@ public class Player : MonoBehaviour
                     Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
                 }
 
-                _ammoCount--;
-                _uiManager.UpdateAmmoText(_ammoCount);
-
-                if (_ammoCount <= 5)
+                if (_asterioid.HasDestroyedLaser)
                 {
-                    _uiManager.SetTextColor(Color.red);
-                }
-                else if (_ammoCount <= 10)
-                {
-                    _uiManager.SetTextColor(Color.white);
-                }
+                    _ammoCount--;
+                    _uiManager.UpdateAmmoText(_ammoCount);
 
-                if (_ammoCount % 3 == 0) //if ammo count divided by three reminder is equal to zero
-                {
-                    _uiManager.HideBullet(_uiLasersCount);
-                    _uiLasersCount++;
-
-                    if (_uiLasersCount > 4)
+                    if (_ammoCount <= 5)
                     {
-                        _uiLasersCount = 0;
+                        _uiManager.SetTextColor(Color.red);
+                    }
+                    else if (_ammoCount <= 10)
+                    {
+                        _uiManager.SetTextColor(Color.white);
+                    }
 
+                    if (_ammoCount % 3 == 0) //if ammo count divided by three reminder is equal to zero
+                    {
+                        _uiManager.HideBullet(_uiLasersCount);
+                        _uiLasersCount++;
+
+                        if (_uiLasersCount > 4)
+                        {
+                            _uiLasersCount = 0;
+
+                        }
                     }
                 }
+                
+
+                
 
                 _audioSource.Play();
             }
@@ -184,14 +204,14 @@ public class Player : MonoBehaviour
 
     private void SpeedRate()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift) )
+        if (Input.GetKeyDown(KeyCode.LeftShift) && _isNegativeSpeedActive == false)
         {
             _uiManager.UpdateBar(true);
             _isSpeedBoostActive = true;
             
         }
 
-        else if (Input.GetKeyUp(KeyCode.LeftShift) )
+        else if (Input.GetKeyUp(KeyCode.LeftShift) && _isNegativeSpeedActive == false)
         {
             _isSpeedBoostActive = false;
             _uiManager.UpdateBar(false);
@@ -261,18 +281,18 @@ public class Player : MonoBehaviour
         {
             if (_shieldLives == 2)
             {
-                seconds1 = 0.1f;
-                seconds2 = 1.0f;
+                seconds1 = 1.0f;
+                seconds2 = 0.1f;
             }
             else
             {
-                seconds1 = 0.1f;
-                seconds2 = 0.5f;
+                seconds1 = 0.5f;
+                seconds2 = 0.1f;
             }
 
-            _shieldGameObject.SetActive(false);
-            yield return new WaitForSeconds(seconds1);
             _shieldGameObject.SetActive(true);
+            yield return new WaitForSeconds(seconds1);
+            _shieldGameObject.SetActive(false);
             yield return new WaitForSeconds(seconds2);
         }
     }
@@ -283,11 +303,6 @@ public class Player : MonoBehaviour
         _shieldGameObject.GetComponent<SpriteRenderer>().material = _shieldMaterials[2];
     }
 
-    public bool IsShieldActive()
-    {
-        return _isShieldActive;
-    }
-    
     public void TripleShotActive()
     {
         _isTripleShotActive = true;
@@ -334,24 +349,15 @@ public class Player : MonoBehaviour
         _uiManager.UpdateScore(_score);
     }
 
-    public bool IsDisplayingNoAmmoText()
-    {
-        return _isNoAmmoTextDisplaying;
-    }
-
     public void RefillAmmo()
     {
-        if (_isNoAmmoTextDisplaying)
-        {
-            _uiManager.HideNoAmmoText();
-            _isNoAmmoTextDisplaying = false;
-        }
         
         _ammoCount = 15;
         _uiLasersCount = 0;
         _uiManager.SetTextColor(Color.green);
         _uiManager.DisplayBullets();
         _uiManager.UpdateAmmoText(_ammoCount);
+        _uiManager.HideNoAmmoText();
 
     }
 
@@ -397,7 +403,8 @@ public class Player : MonoBehaviour
 
     public void CanSpeedUp(bool canSpeed)
     {
-        _canSpeedUp = canSpeed;
+        if (!_isNegativeSpeedActive)
+            _canSpeedUp = canSpeed;
 
         if (!_canSpeedUp)
         {
@@ -407,5 +414,29 @@ public class Player : MonoBehaviour
         {
             _isSpeedBoostActive = true;
         }
+    }
+
+    public void NegativeSpeedActive()
+    {
+        _isSpeedBoostActive = false;
+        _isNegativeSpeedActive = true;
+        _canSpeedUp = false;
+        _thruster.SetActive(false);
+        _uiManager.ResetBar();
+        _uiManager.UpdateThrusterBarColor(true);
+        StartCoroutine(NegativeSpeedPowerDownRoutine());
+    }
+
+    IEnumerator NegativeSpeedPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(4.0f);
+        _isNegativeSpeedActive = false;
+        _canSpeedUp = true;
+        _uiManager.UpdateThrusterBarColor(false);
+    }
+
+    public bool GetNegativeSpeed()
+    {
+        return _isNegativeSpeedActive;
     }
 }

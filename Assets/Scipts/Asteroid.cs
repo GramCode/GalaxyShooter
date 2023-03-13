@@ -8,10 +8,12 @@ public class Asteroid : MonoBehaviour
     [SerializeField] private GameObject _explosionAnim;
 
     private SpawnManager _spawnManager;
+    public bool HasDestroyedLaser { get; private set; }
 
     private void Start()
     {
         _spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
+        HasDestroyedLaser = false;
     }
 
     void Update()
@@ -25,7 +27,7 @@ public class Asteroid : MonoBehaviour
         {
             Instantiate(_explosionAnim, transform.position, Quaternion.identity);
             Destroy(collision.gameObject);
-            
+            HasDestroyedLaser = true;
             _spawnManager.StartSpawning();
             Destroy(this.gameObject, 0.2f);
             

@@ -5,8 +5,19 @@ using UnityEngine;
 public class PowerUp : MonoBehaviour
 {
     [SerializeField] private float _speed = 3.0f;
-    [SerializeField] private int _powerupID; //0 = Triple Shot, 1 = Speed, 2 = Shields, 3 = Bullets, 4 = life, 5 = spread shot
+    [SerializeField] private int _powerupID; //0 = Triple Shot, 1 = Speed, 2 = Shields, 3 = Bullets, 4 = life, 5 = negative speed, 6 = spread shot
     [SerializeField] private AudioClip _clip;
+
+    private UIManager _uiManager;
+
+    private void Start()
+    {
+        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        if (_uiManager == null)
+        {
+            Debug.LogError("UI Manager in PowerUp is NULL");
+        }
+    }
 
     void Update()
     {
@@ -63,6 +74,9 @@ public class PowerUp : MonoBehaviour
                             player.TripleShotNotActive();
                         }
                         player.SpreadShotActive();
+                        break;
+                    case 6:
+                        player.NegativeSpeedActive();
                         break;
                 }
                 

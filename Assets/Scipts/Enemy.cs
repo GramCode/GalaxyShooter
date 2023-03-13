@@ -72,7 +72,6 @@ public class Enemy : MonoBehaviour
             Debug.LogError("Waves in Enemy is NULL");
         }
 
-        //_container = new GameObject("Container");
         _container = GameObject.Find("Waypoints Container");
         _waypoints[0] = new GameObject("waypoint 1");
         _waypoints[1] = new GameObject("waypoint 2");
@@ -252,5 +251,9 @@ public class Enemy : MonoBehaviour
     {
         return _enemiesEliminated;
     }
-    
+
+    public void ResetEliminatedEnemies()
+    {
+        _enemiesEliminated = 0;
+    }
 }

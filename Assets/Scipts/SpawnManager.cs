@@ -80,16 +80,16 @@ public class SpawnManager : MonoBehaviour
 
     private int GetPowerupIndex()
     {
-        int number = Random.Range(0, 10);
+        int number = Random.Range(0, 20);
         int randomPowerup;
 
-        if (number < 9)
+        if (number < 19)
         {
-            randomPowerup = Random.Range(0, 5);
+            randomPowerup = Random.Range(0, 6);
         }
         else
         {
-            randomPowerup = 5;
+            randomPowerup = 6;
         }
 
         return randomPowerup;
@@ -130,5 +130,11 @@ public class SpawnManager : MonoBehaviour
     public int GetCurrentWave()
     {
         return _currentWave;
+    }
+
+    public void GameOver()
+    {
+        _stopSpawningEnemy = true;
+        _stopSpawningPowerup = true;
     }
 }

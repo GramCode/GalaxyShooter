@@ -1028,6 +1028,7 @@ MonoBehaviour:
   - {fileID: 7964672423786858297, guid: 7933a2f6e148d417e9d3230773222947, type: 3}
   - {fileID: 2312934356475897383, guid: aa4744dc812f84e19ad7fa081747e67b, type: 3}
   - {fileID: 1033542393631251793, guid: c1a9c1f7f2bbc4b259595cc4b483320b, type: 3}
+  - {fileID: 4717740678784098239, guid: 4f6e5385d77b2498296127636cd3cf6d, type: 3}
   - {fileID: 3437180734904643641, guid: 03365c648ff3e441190587db6de2d8ae, type: 3}
 --- !u!1 &643614645
 GameObject:
@@ -1158,7 +1159,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 700160078}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.24659257, y: 0.8574442, z: 1.0407292}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1274,10 +1275,10 @@ GameObject:
   m_Layer: 5
   m_Name: Ammo_Count_Text
   m_TagString: Untagged
-  m_Icon: {fileID: 2800000, guid: 1732e542f535d374bbfa7565fc78414e, type: 3}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &784498298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2596,6 +2597,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e6167c1637a3400b984c19101f16b32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enemy: {fileID: -4593319756403169616, guid: de88efea78ec04bb1aa975006278aef3, type: 3}
 --- !u!4 &1409019240
 Transform:
   m_ObjectHideFlags: 0
@@ -2736,6 +2738,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8f9ba1be865f34b5d8f3d45689b8e089, type: 2}
   - {fileID: 11400000, guid: 16b8dbf12045544a89349eb06e1bb045, type: 2}
   - {fileID: 11400000, guid: 3ec1c717502c84277b8a4750ed461cc0, type: 2}
+  - {fileID: 11400000, guid: 9828f04763fd54071916c52e5df4b7db, type: 2}
+  - {fileID: 11400000, guid: da294c4e5568d4874a3f24d1c57f9898, type: 2}
+  - {fileID: 11400000, guid: 3fef5a8588bfe4153bceab3222bf340f, type: 2}
+  - {fileID: 11400000, guid: 1e7ae34d6045e4e8a9d7726ce4dd70fc, type: 2}
 --- !u!1 &1540686405
 GameObject:
   m_ObjectHideFlags: 0
@@ -2828,7 +2834,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 33
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
