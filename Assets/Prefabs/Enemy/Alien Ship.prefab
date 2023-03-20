@@ -9,14 +9,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1913537181160908052}
-  - component: {fileID: -4593319756403169616}
+  - component: {fileID: -1902495647643994508}
   - component: {fileID: 302729405384315550}
   - component: {fileID: 1605255453211308315}
-  - component: {fileID: 1612512813638055868}
-  - component: {fileID: 667760968824618421}
-  - component: {fileID: -7047311693571847789}
+  - component: {fileID: 2023635482}
+  - component: {fileID: 3327254624588482986}
+  - component: {fileID: -7236141220932633145}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: Alien Ship
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,14 +30,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1913537181160908072}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.5590913, y: 3.9028614, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.13, y: 0.11, z: 0.02}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-4593319756403169616
+--- !u!114 &-1902495647643994508
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -46,14 +46,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1913537181160908072}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32df9dcae228b418eb2041964e579d21, type: 3}
+  m_Script: {fileID: 11500000, guid: 82d0bc72d45d24bf0b5f5437bfcd5e5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 3.5
-  _laserPrefab: {fileID: 6023498584619742160, guid: 4e72494dbe0ad49a289a4e5cb1258f3a, type: 3}
-  _laserAudioClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
   _laserBeamPrefab: {fileID: 5114063870685403337, guid: 943ed2e2b611d4bb18316c5d19561230, type: 3}
   _explosion: {fileID: 93922394887139743, guid: e482fff6f90024fad8d2f2ab7a7e381a, type: 3}
+  _blast: {fileID: 6653885690357006086, guid: 9d46992399eae4ff18bbe2ecdcd32374, type: 3}
 --- !u!212 &302729405384315550
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -94,13 +93,13 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1756554571
   m_SortingLayer: 2
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 3154912113cbb4a498df6f571c74e18c, type: 3}
+  m_SortingOrder: 2
+  m_Sprite: {fileID: -2070152723, guid: 76b0e3c7eba574d238e228d7ca81429d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 5.12, y: 5.12}
+  m_Size: {x: 21.345001, y: 21.345001}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -127,8 +126,28 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!61 &1612512813638055868
-BoxCollider2D:
+--- !u!95 &2023635482
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1913537181160908072}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f1d79164f753046a282a450199f1e9ca, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!68 &3327254624588482986
+EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -140,40 +159,36 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.008277774, y: 0.12622935}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 5.12, y: 5.12}
-    newSize: {x: 5.12, y: 5.12}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 2.093006, y: 2.552909}
+  m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
---- !u!95 &667760968824618421
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1913537181160908072}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 8e7930125105543e0893fc8eabbc8b45, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!82 &-7047311693571847789
+  m_Points:
+  - {x: 5.1720724, y: -3.2049246}
+  - {x: 4.0368967, y: -0.18484998}
+  - {x: 3.6035025, y: 0.6652004}
+  - {x: 3.012785, y: 1.1334295}
+  - {x: 2.5059204, y: 1.329187}
+  - {x: 1.2423692, y: 1.5251501}
+  - {x: 0.69674325, y: 0.81534004}
+  - {x: 0.41216773, y: -3.3795311}
+  - {x: 0.017459527, y: -3.8604953}
+  - {x: -0.31958222, y: -3.3380914}
+  - {x: -0.60284626, y: 0.8228326}
+  - {x: -1.0756968, y: 1.5359116}
+  - {x: -2.5433626, y: 1.3621594}
+  - {x: -3.3900905, y: 0.97228026}
+  - {x: -4.395611, y: -1.2603638}
+  - {x: -5.035488, y: -3.2049248}
+  - {x: -5.888658, y: -2.8448205}
+  - {x: -3.5808983, y: 4.6306834}
+  - {x: 0.041958213, y: 6.387015}
+  - {x: 3.7687175, y: 4.6559815}
+  - {x: 5.988911, y: -2.864803}
+  - {x: 5.149387, y: -3.247009}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
+--- !u!82 &-7236141220932633145
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -183,8 +198,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}
-  m_PlayOnAwake: 0
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
   Loop: 0

@@ -27,7 +27,7 @@ public class Asteroid : MonoBehaviour
     {
         if (collision.tag == "Laser")
         {
-            _uiManager.UpdateAndDisplayWaveText(SpawnManager.CurrentWave + 1);
+            _uiManager.UpdateAndDisplayWaveText(_spawnManager.CurrentWave + 1);
             Instantiate(_explosionAnim, transform.position, Quaternion.identity);
             Destroy(collision.gameObject);
             HasDestroyedAsteroid = true;

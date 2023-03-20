@@ -91,7 +91,7 @@ public class UIManager : MonoBehaviour
     {
         _gameManager.GameOver();
         _gameOverText.gameObject.SetActive(true);
-        _resetSceneText.text = "Press the 'R' key to restart the level";
+        _resetSceneText.text = "Press the 'R' key to restart the game.";
         _resetSceneText.gameObject.SetActive(true);
         StartCoroutine(GameOverFlickerRoutine());
     }
@@ -250,13 +250,6 @@ public class UIManager : MonoBehaviour
         StartCoroutine(HideWavesTextRoutine());
     }
 
-    IEnumerator HideWavesTextRoutine()
-    {
-        yield return new WaitForSeconds(3.5f);
-        _wavesText.gameObject.SetActive(false);
-        _isWavesTextShowing = false;
-    }
-
     IEnumerator WavesFlickerRoutine(int wave)
     {
         while (_isWavesTextShowing)
@@ -266,6 +259,13 @@ public class UIManager : MonoBehaviour
             _wavesText.text = "";
             yield return new WaitForSeconds(0.5f);
         }
+    }
+
+    IEnumerator HideWavesTextRoutine()
+    {
+        yield return new WaitForSeconds(3.5f);
+        _wavesText.gameObject.SetActive(false);
+        _isWavesTextShowing = false;
     }
 
     public void AllWavesCompleted()
@@ -295,11 +295,15 @@ public class UIManager : MonoBehaviour
         _barImage.fillAmount = 1.0f;
     }
 
-    public void StopDisplayingAllText()
+    public void StopDisplayingNoAmmoText()
     {
         _noAmmoText.gameObject.SetActive(false);
-        _wavesText.gameObject.SetActive(false);
         _isNoAmmoTextActive = false;
+    }
+
+    public void HideWaveText()
+    {
+        _wavesText.gameObject.SetActive(false);
     }
 
     public void AmmoCountEnabledOnStart()

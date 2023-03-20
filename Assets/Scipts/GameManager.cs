@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    private bool _isGameOver = false;
+    public bool IsGameOver { get; private set; }
     private UIManager _uiManager;
     private SpawnManager _spawnManager;
     [SerializeField] private Enemy _enemy;
@@ -27,19 +27,19 @@ public class GameManager : MonoBehaviour
         }
 
         GameCompleted = false;
-
+        IsGameOver = false;
     }
 
     private void Update()
     {
-        if (_isGameOver || GameCompleted)
+        if (IsGameOver || GameCompleted)
         {
             _uiManager.UpdateThrusterBarColor(false);
-            _uiManager.StopDisplayingAllText();
-            _spawnManager.GameOver();
+            _uiManager.StopDisplayingNoAmmoText();
+            _spawnManager.StopSpawning();
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && _isGameOver || Input.GetKeyDown(KeyCode.R) && GameCompleted)
+        if (Input.GetKeyDown(KeyCode.R) && IsGameOver || Input.GetKeyDown(KeyCode.R) && GameCompleted)
         {
             _enemy.ResetEliminatedEnemies();
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        _isGameOver = true;
+        IsGameOver = true;
     }
 
     public void CompletedGame()

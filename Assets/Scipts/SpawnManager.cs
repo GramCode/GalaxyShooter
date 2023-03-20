@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [SerializeField] private GameObject _enemyPrefab;
+    [SerializeField] private GameObject[] _enemiesPrefab; //Default, Blaster, Follower
     [SerializeField] private GameObject _enemyContainer;
     [SerializeField] private GameObject[] _powerups;
 
@@ -12,30 +12,54 @@ public class SpawnManager : MonoBehaviour
     private Vector3 _posToSpawnPowerup;
     private bool _stopSpawningEnemy = false;
     private bool _stopSpawningPowerup = false;
-    private Waves _wavesObj;
     private UIManager _uIManager;
+    private GameManager _gameManager;
+    private GameObject _enemy;
+    public List<int> wavesEnemies = new List<int>();
 
-    public static int CurrentWave { get; private set; }
-    public static int EnemiesSpawned { get; private set; }
+    public static int WavesCount { get; private set; } 
+    public int CurrentWave { get; private set; }
+    public int EnemiesSpawned { get; private set; }
+    public static int EnemyID { get; private set; }
+
+    enum EnemyType
+    {
+        Default,
+        LaserBeam,
+        FireTwice
+    }
+
+    private EnemyType[] _enemiesType = new EnemyType[3];
 
     void Start()
     {
         _posToSpawnEnemy = new Vector3(Random.Range(-8f, 8f), 7, 0);
         _posToSpawnPowerup = new Vector3(Random.Range(-8f, 8f), 7, 0);
 
-        _wavesObj = GameObject.Find("Waves").GetComponent<Waves>();
-        if(_wavesObj == null)
-        {
-            Debug.LogError("Waves in SpawnManager is NULL");
-        }
-
         _uIManager = GameObject.Find("Canvas").GetComponent<UIManager>();
-        if(_uIManager == null)
+        if (_uIManager == null)
         {
             Debug.LogError("UI Manager in Spawn Manager is NULL");
         }
 
+        _gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        if (_gameManager == null)
+        {
+            Debug.LogError("GameManager in SpawnManager is NULL");
+        }
+
+        WavesCount = 8;
+
+        for (int i = 1; i <= WavesCount; i++)
+        {
+            wavesEnemies.Add(i * 2);
+        }
+
         CurrentWave = 0;
+
+        _enemiesType[0] = EnemyType.Default;
+        _enemiesType[1] = EnemyType.LaserBeam;
+        _enemiesType[2] = EnemyType.FireTwice;
     }
 
     public void StartSpawning()
@@ -61,19 +85,43 @@ public class SpawnManager : MonoBehaviour
 
         while (_stopSpawningEnemy == false)
         {
-            if (EnemiesSpawned < _wavesObj.waves[CurrentWave].GetEnemiesInWave())
+            if (EnemiesSpawned < wavesEnemies[CurrentWave]) 
             {
+                EnemyType enemyType = _enemiesType[Random.Range(0, _enemiesType.Length)];
+                TypeOfEnemy(enemyType);
                 EnemiesSpawned++;
-                GameObject newEnemy = Instantiate(_enemyPrefab, _posToSpawnEnemy, Quaternion.identity);
+                GameObject newEnemy = Instantiate(_enemy, _posToSpawnEnemy, Quaternion.identity);
                 newEnemy.transform.parent = _enemyContainer.transform;
-                
             }
             else
             {
-                _stopSpawningEnemy = true;                
+                _stopSpawningEnemy = true;
             }
 
+            
             yield return new WaitForSeconds(5.0f);
+        }
+    }
+
+    private void TypeOfEnemy(EnemyType enemyType)
+    {
+        switch (enemyType)
+        {
+            case EnemyType.Default:
+                //Shoot normal laser
+                _enemy = _enemiesPrefab[0];
+                break;
+            case EnemyType.LaserBeam:
+                //Shoot LaserBeam
+                _enemy = _enemiesPrefab[1];
+                break;
+            case EnemyType.FireTwice:
+                //Follow waypoints
+                _enemy = _enemiesPrefab[2];
+                break;
+            default:
+                _enemy = _enemiesPrefab[0];
+                break;
         }
     }
 
@@ -119,16 +167,24 @@ public class SpawnManager : MonoBehaviour
         EnemiesSpawned = 0;
         CurrentWave++;
 
-        if (CurrentWave >= _wavesObj.waves.Count)
+        if (_gameManager.IsGameOver)
         {
-            _uIManager.AllWavesCompleted();
-            _stopSpawningEnemy = true;
-            _stopSpawningPowerup = true;
+            EnemiesSpawned = 0;
         }
         else
         {
-            StartCoroutine(WaveCoolDownRoutine());
+            if (CurrentWave >= WavesCount)
+            {
+                _uIManager.AllWavesCompleted();
+                _stopSpawningEnemy = true;
+                _stopSpawningPowerup = true;
+            }
+            else
+            {
+                StartCoroutine(WaveCoolDownRoutine());
+            }
         }
+        
     }
 
     IEnumerator WaveCoolDownRoutine()
@@ -139,9 +195,10 @@ public class SpawnManager : MonoBehaviour
         StartCoroutine(SpawnEnemyRoutine());
     }
 
-    public void GameOver()
+    public void StopSpawning()
     {
         _stopSpawningEnemy = true;
         _stopSpawningPowerup = true;
     }
+
 }
