@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text _wavesText;
     [SerializeField] private Image _barImage;
     [SerializeField] private List<GameObject> _laserImageUI;
+    [SerializeField] private GameObject _pauseMenu;
 
     private GameManager _gameManager;
     private Player _player;
@@ -69,6 +70,8 @@ public class UIManager : MonoBehaviour
         {
             _ammoText.gameObject.SetActive(true);
         }
+
+       
     }
 
     public void UpdateScore(int playerScore)
@@ -309,5 +312,12 @@ public class UIManager : MonoBehaviour
     public void AmmoCountEnabledOnStart()
     {
         _ammoText.text = "15 / 15";
+    }
+
+    public void PauseMenu()
+    {
+        //GameObject.Find("Gear Icon").SetActive(false);
+        Instantiate(_pauseMenu, Vector2.zero, Quaternion.identity);
+        Time.timeScale = 0;
     }
 }

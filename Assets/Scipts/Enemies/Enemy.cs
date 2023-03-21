@@ -75,7 +75,6 @@ public class Enemy : MonoBehaviour
             FireLaser();
         }
 
-        CheckForNextWave();
         
     }
 
@@ -134,6 +133,7 @@ public class Enemy : MonoBehaviour
             _speed = 0;
             _isDestroyed = true;
             EnemiesEliminated++;
+            CheckForNextWave();
             _audioSource.Play();
             Destroy(_collider2D);
             Destroy(this.gameObject, 2.8f);
@@ -149,6 +149,7 @@ public class Enemy : MonoBehaviour
             _speed = 0;
             _isDestroyed = true;
             EnemiesEliminated++;
+            CheckForNextWave();
             _audioSource.Play();
             Destroy(_collider2D);
             Destroy(this.gameObject, 2.8f);

@@ -87,8 +87,8 @@ public class SpawnManager : MonoBehaviour
         {
             if (EnemiesSpawned < wavesEnemies[CurrentWave]) 
             {
-                EnemyType enemyType = _enemiesType[Random.Range(0, _enemiesType.Length)];
-                TypeOfEnemy(enemyType);
+                //EnemyType enemyType = _enemiesType[Random.Range(0, _enemiesType.Length)];
+                TypeOfEnemy(GetEnemyType());
                 EnemiesSpawned++;
                 GameObject newEnemy = Instantiate(_enemy, _posToSpawnEnemy, Quaternion.identity);
                 newEnemy.transform.parent = _enemyContainer.transform;
@@ -125,6 +125,27 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
+    private EnemyType GetEnemyType()
+    {
+        int percent = Random.Range(0, 100);
+        EnemyType enemyType;
+
+        if (percent <= 60)
+        {
+            enemyType = EnemyType.Default;
+        }
+        else if (percent > 60 && percent <= 90)
+        {
+            enemyType = EnemyType.LaserBeam;
+        }
+        else
+        {
+            enemyType = EnemyType.FireTwice;
+        }
+        Debug.Log("enemy percent is: " + percent);
+        return enemyType;
+    }
+
     IEnumerator SpawnPowerupRoutine()
     {
         yield return new WaitForSeconds(3.0f);
@@ -140,18 +161,28 @@ public class SpawnManager : MonoBehaviour
 
     private int GetPowerupIndex()
     {
-        int number = Random.Range(0, 20);
+
+        int number = Random.Range(0, 100);
+
         int randomPowerup;
 
-        if (number < 19)
+        if (number <= 40)
         {
-            randomPowerup = Random.Range(0, 6);
+            randomPowerup = 5;
         }
-        else
+        else if (number > 40 && number <= 70)
+        {
+            randomPowerup = Random.Range(0, 5);
+        }
+        else if (number > 70 && number <= 90)
         {
             randomPowerup = 6;
         }
-
+        else
+        {
+            randomPowerup = 4;
+        }
+        Debug.Log("Powerup percent is: " + number);
         return randomPowerup;
     }
 

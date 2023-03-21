@@ -434,7 +434,7 @@ GameObject:
   - component: {fileID: 4897655430774429473}
   - component: {fileID: 6518882119339216222}
   m_Layer: 0
-  m_Name: Laser Powerup
+  m_Name: Ammo Refill Powerup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -240,7 +240,6 @@ public class Player : MonoBehaviour
         if (_lives >= 0)
         {
             _uiManager.UpdateLives(_lives);
-            _uiManager.HideWaveText();
         }
 
 

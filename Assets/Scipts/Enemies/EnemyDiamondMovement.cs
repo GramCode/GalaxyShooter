@@ -77,21 +77,7 @@ public class EnemyDiamondMovement : MonoBehaviour
     {
         EnemyBehavior();
         FireLaser();
-        
-        if (!_gameManager.GameCompleted)
-        {
-            if (Enemy.EnemiesEliminated == _spawnManger.wavesEnemies[_spawnManger.CurrentWave])
-            {
-                _spawnManger.CompletedWave();
-                Enemy.EnemiesEliminated = 0;
-
-                if (SpawnManager.WavesCount == _spawnManger.CurrentWave)
-                {
-                    _gameManager.CompletedGame();
-                }
-            }
-        }
-        
+                
     }
 
     void EnemyBehavior()
@@ -250,6 +236,7 @@ public class EnemyDiamondMovement : MonoBehaviour
                 _player.Damage();
             _speed = 0;
             Enemy.EnemiesEliminated++;
+            CheckForNextWave();
             Instantiate(_explosion, transform.position, Quaternion.identity);
             DestroyWaypointsGameObjects();
             Destroy(_collider2D);
@@ -263,6 +250,7 @@ public class EnemyDiamondMovement : MonoBehaviour
 
             _speed = 0;
             Enemy.EnemiesEliminated++;
+            CheckForNextWave();
             Instantiate(_explosion, transform.position, Quaternion.identity);
             DestroyWaypointsGameObjects();
             Destroy(_collider2D);
@@ -270,5 +258,22 @@ public class EnemyDiamondMovement : MonoBehaviour
             Destroy(other.gameObject);
         }
 
+    }
+
+    private void CheckForNextWave()
+    {
+        if (!_gameManager.GameCompleted)
+        {
+            if (Enemy.EnemiesEliminated == _spawnManger.wavesEnemies[_spawnManger.CurrentWave])
+            {
+                _spawnManger.CompletedWave();
+                Enemy.EnemiesEliminated = 0;
+
+                if (SpawnManager.WavesCount == _spawnManger.CurrentWave)
+                {
+                    _gameManager.CompletedGame();
+                }
+            }
+        }
     }
 }

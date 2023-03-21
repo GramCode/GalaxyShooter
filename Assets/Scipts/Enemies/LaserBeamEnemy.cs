@@ -59,19 +59,7 @@ public class LaserBeamEnemy : MonoBehaviour
         EnemyBehavior();
         EnemyBounds();
         
-        if (!_gameManager.GameCompleted)
-        {
-            if (Enemy.EnemiesEliminated == _spawnManger.wavesEnemies[_spawnManger.CurrentWave])
-            {
-                _spawnManger.CompletedWave();
-                Enemy.EnemiesEliminated = 0;
-
-                if (SpawnManager.WavesCount == _spawnManger.CurrentWave)
-                {
-                    _gameManager.CompletedGame();
-                }
-            }
-        }
+       
         
     }
 
@@ -137,7 +125,7 @@ public class LaserBeamEnemy : MonoBehaviour
     {
         float value = 0;
         bool exitWhileLoop = false;
-        while (value < 0.91 && exitWhileLoop == false)
+        while (value < 0.91 && exitWhileLoop == false && Time.timeScale != 0)
         {
 
             value += 0.005f;
@@ -178,6 +166,7 @@ public class LaserBeamEnemy : MonoBehaviour
                 _player.Damage();
             _speed = 0;
             Enemy.EnemiesEliminated++;
+            CheckForNextWave();
             Instantiate(_explosion, transform.position, Quaternion.identity);
             _isDestroyed = true;
             Destroy(_collider2D);
@@ -191,6 +180,7 @@ public class LaserBeamEnemy : MonoBehaviour
 
             _speed = 0;
             Enemy.EnemiesEliminated++;
+            CheckForNextWave();
             Instantiate(_explosion, transform.position, Quaternion.identity);
             _isDestroyed = true;
             Destroy(_collider2D);
@@ -198,5 +188,22 @@ public class LaserBeamEnemy : MonoBehaviour
             Destroy(other.gameObject);
         }
 
+    }
+
+    private void CheckForNextWave()
+    {
+        if (!_gameManager.GameCompleted)
+        {
+            if (Enemy.EnemiesEliminated == _spawnManger.wavesEnemies[_spawnManger.CurrentWave])
+            {
+                _spawnManger.CompletedWave();
+                Enemy.EnemiesEliminated = 0;
+
+                if (SpawnManager.WavesCount == _spawnManger.CurrentWave)
+                {
+                    _gameManager.CompletedGame();
+                }
+            }
+        }
     }
 }
