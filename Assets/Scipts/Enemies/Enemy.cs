@@ -73,8 +73,9 @@ public class Enemy : MonoBehaviour
         if (!_isDestroyed)
         {
             FireLaser();
+            FollowPlayer();
         }
-
+        
         
     }
 
@@ -105,21 +106,28 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void CheckForNextWave()
+    private void FollowPlayer()
     {
-        if (!_gameManager.GameCompleted)
+        if (_player != null)
         {
-            if (EnemiesEliminated == _spawnManger.wavesEnemies[_spawnManger.CurrentWave])
-            {
-                _spawnManger.CompletedWave();
-                EnemiesEliminated = 0;
+            Vector3 distance = _player.gameObject.transform.position - transform.position;
 
-                if (SpawnManager.WavesCount == _spawnManger.CurrentWave)
+            if (Vector2.Distance(transform.position, _player.gameObject.transform.position) < 3.0)
+            {
+                if (distance.y < 1.0f)
                 {
-                    _gameManager.CompletedGame();
+                    if (distance.x >= -2.5 && distance.x < 0)
+                    {
+                        transform.Translate(Vector3.left * (_speed / 3f) * Time.deltaTime);
+                    }
+                    else if (distance.x <= 2.5 && distance.x > 0)
+                    {
+                        transform.Translate(Vector2.right * (_speed / 3f) * Time.deltaTime);
+                    }
                 }
             }
         }
+        
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -156,6 +164,23 @@ public class Enemy : MonoBehaviour
             Destroy(other.gameObject);
         }
 
+    }
+
+    private void CheckForNextWave()
+    {
+        if (!_gameManager.GameCompleted)
+        {
+            if (EnemiesEliminated == _spawnManger.wavesEnemies[_spawnManger.CurrentWave])
+            {
+                _spawnManger.CompletedWave();
+                EnemiesEliminated = 0;
+
+                if (SpawnManager.WavesCount == _spawnManger.CurrentWave)
+                {
+                    _gameManager.CompletedGame();
+                }
+            }
+        }
     }
 
     public void ResetEliminatedEnemies()

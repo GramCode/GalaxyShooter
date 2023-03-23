@@ -23,6 +23,7 @@ public class EnemyDiamondMovement : MonoBehaviour
     private int randomChoice;
     private float _fireRate = 3.0f;
     private float _canShoot = -1;
+    private bool _isShieldActive = true;
 
     void Start()
     {
@@ -116,6 +117,7 @@ public class EnemyDiamondMovement : MonoBehaviour
             _completedCicle = false;
             _isCiclying = false;
             randomChoice = Random.Range(0, 2);
+            _collider2D.enabled = true;
         }
 
     }
@@ -230,10 +232,18 @@ public class EnemyDiamondMovement : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-
+            if (_isShieldActive)
+            {
+                if (_player != null)
+                    _player.Damage();
+                HideShield();
+                _collider2D.enabled = false;
+                return;
+            }
 
             if (_player != null)
                 _player.Damage();
+
             _speed = 0;
             Enemy.EnemiesEliminated++;
             CheckForNextWave();
@@ -241,10 +251,20 @@ public class EnemyDiamondMovement : MonoBehaviour
             DestroyWaypointsGameObjects();
             Destroy(_collider2D);
             Destroy(this.gameObject, 0.2f);
+            
+            
         }
 
         if (other.CompareTag("Laser"))
-        {            
+        {
+
+            if (_isShieldActive)
+            {
+                HideShield();
+                Destroy(other.gameObject);
+                return;
+            }
+            
             if (_player != null)
                 _player.AddScore(10);
 
@@ -256,6 +276,8 @@ public class EnemyDiamondMovement : MonoBehaviour
             Destroy(_collider2D);
             Destroy(this.gameObject, 0.2f);
             Destroy(other.gameObject);
+            
+            
         }
 
     }
@@ -275,5 +297,11 @@ public class EnemyDiamondMovement : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void HideShield()
+    {
+        _isShieldActive = false;
+        GameObject.FindGameObjectWithTag("EnemyShield").SetActive(false);
     }
 }

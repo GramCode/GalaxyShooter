@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [SerializeField] private GameObject[] _enemiesPrefab; //Default, Blaster, Follower
-    [SerializeField] private GameObject _enemyContainer;
-    [SerializeField] private GameObject[] _powerups;
-
+    [SerializeField]
+    private GameObject[] _enemiesPrefab; //Default, Blaster, Follower
+    [SerializeField]
+    private GameObject _enemyContainer;
+    [SerializeField]
+    private GameObject[] _powerups;
+    
     private Vector3 _posToSpawnEnemy;
     private Vector3 _posToSpawnPowerup;
     private bool _stopSpawningEnemy = false;
@@ -15,6 +18,7 @@ public class SpawnManager : MonoBehaviour
     private UIManager _uIManager;
     private GameManager _gameManager;
     private GameObject _enemy;
+    [HideInInspector]
     public List<int> wavesEnemies = new List<int>();
 
     public static int WavesCount { get; private set; } 
@@ -87,11 +91,10 @@ public class SpawnManager : MonoBehaviour
         {
             if (EnemiesSpawned < wavesEnemies[CurrentWave]) 
             {
-                //EnemyType enemyType = _enemiesType[Random.Range(0, _enemiesType.Length)];
                 TypeOfEnemy(GetEnemyType());
                 EnemiesSpawned++;
-                GameObject newEnemy = Instantiate(_enemy, _posToSpawnEnemy, Quaternion.identity);
-                newEnemy.transform.parent = _enemyContainer.transform;
+                GameObject newEnemy = Instantiate(_enemiesPrefab[0], _posToSpawnEnemy, Quaternion.identity);
+                newEnemy.transform.parent = _enemyContainer.transform;                
             }
             else
             {
@@ -116,7 +119,7 @@ public class SpawnManager : MonoBehaviour
                 _enemy = _enemiesPrefab[1];
                 break;
             case EnemyType.FireTwice:
-                //Follow waypoints
+                //Fire Twice
                 _enemy = _enemiesPrefab[2];
                 break;
             default:
