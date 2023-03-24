@@ -9,6 +9,7 @@ public class Laser : MonoBehaviour
     [SerializeField] private bool _isSpreadShot;
     private Vector3 _distance;
     private bool _isEnemyLaser = false;
+    private bool _isEnemyShootingBackward = false;
 
     private void Start()
     {
@@ -21,7 +22,7 @@ public class Laser : MonoBehaviour
     void Update()
     {
 
-        if (_isEnemyLaser == false)
+        if (_isEnemyLaser == false || _isEnemyShootingBackward)
         {
             MoveUp();
         }
@@ -80,6 +81,10 @@ public class Laser : MonoBehaviour
         _isEnemyLaser = true;
     }
 
+    public void ShootingBackwards()
+    {
+        _isEnemyShootingBackward = true;
+    }
 
 
     private void OnTriggerEnter2D(Collider2D other)

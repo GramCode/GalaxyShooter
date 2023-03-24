@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LaserBeamEnemy : MonoBehaviour
 {
-    [SerializeField] private float _speed = 3.0f;
+    [SerializeField] private float _speed = 3.5f;
     [SerializeField] private GameObject _laserBeamPrefab;
     [SerializeField] private GameObject _explosion;
     [SerializeField] private GameObject _blast;

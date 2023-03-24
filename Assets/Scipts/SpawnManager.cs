@@ -30,10 +30,11 @@ public class SpawnManager : MonoBehaviour
     {
         Default,
         LaserBeam,
-        FireTwice
+        FireTwice,
+        ShootBackward
     }
 
-    private EnemyType[] _enemiesType = new EnemyType[3];
+    private EnemyType[] _enemiesType = new EnemyType[4];
 
     void Start()
     {
@@ -64,6 +65,7 @@ public class SpawnManager : MonoBehaviour
         _enemiesType[0] = EnemyType.Default;
         _enemiesType[1] = EnemyType.LaserBeam;
         _enemiesType[2] = EnemyType.FireTwice;
+        _enemiesType[3] = EnemyType.ShootBackward;
     }
 
     public void StartSpawning()
@@ -93,7 +95,7 @@ public class SpawnManager : MonoBehaviour
             {
                 TypeOfEnemy(GetEnemyType());
                 EnemiesSpawned++;
-                GameObject newEnemy = Instantiate(_enemiesPrefab[0], _posToSpawnEnemy, Quaternion.identity);
+                GameObject newEnemy = Instantiate(_enemiesPrefab[3], _posToSpawnEnemy, Quaternion.identity);
                 newEnemy.transform.parent = _enemyContainer.transform;                
             }
             else
@@ -122,6 +124,9 @@ public class SpawnManager : MonoBehaviour
                 //Fire Twice
                 _enemy = _enemiesPrefab[2];
                 break;
+            case EnemyType.ShootBackward:
+                _enemy = _enemiesPrefab[3];
+                break;
             default:
                 _enemy = _enemiesPrefab[0];
                 break;
@@ -130,16 +135,20 @@ public class SpawnManager : MonoBehaviour
 
     private EnemyType GetEnemyType()
     {
-        int percent = Random.Range(0, 100);
+        int percent = Random.Range(0, 101);
         EnemyType enemyType;
 
-        if (percent <= 60)
+        if (percent <= 50)
         {
             enemyType = EnemyType.Default;
         }
-        else if (percent > 60 && percent <= 90)
+        else if (percent > 50 && percent <= 70)
         {
             enemyType = EnemyType.LaserBeam;
+        }
+        else if (percent > 70 && percent <= 90)
+        {
+            enemyType = EnemyType.ShootBackward;
         }
         else
         {

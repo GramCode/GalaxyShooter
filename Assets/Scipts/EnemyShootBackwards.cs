@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class EnemyShootBackwards : MonoBehaviour
 {
 
     [SerializeField] private float _speed = 3.5f;
@@ -11,17 +11,15 @@ public class Enemy : MonoBehaviour
     [SerializeField] private GameObject _laserBeamPrefab;
     [SerializeField] private GameObject _explosion;
 
-    private AudioSource _audioSource;
     private Player _player;
     private Collider2D _collider2D;
     private Animator _anim;
     private float _fireRate = 3.0f;
     private float _canShoot = -1;
+    private bool _hasShootBackward = false;
     private bool _isDestroyed = false;
     private SpawnManager _spawnManger;
     private GameManager _gameManager;
-
-    public static int EnemiesEliminated { get; set; }
 
     private void Start()
     {
@@ -37,12 +35,6 @@ public class Enemy : MonoBehaviour
             Debug.LogError("Animator component of Enemy not found.");
         }
 
-        _audioSource = GetComponent<AudioSource>();
-        if (_audioSource == null)
-        {
-            Debug.LogError("AudioSource on Enemy is NULL.");
-        }
-       
         _collider2D = GetComponent<Collider2D>();
         if (_collider2D == null)
         {
@@ -73,10 +65,9 @@ public class Enemy : MonoBehaviour
         if (!_isDestroyed)
         {
             FireLaser();
-            FollowPlayer();
         }
-        
-        
+
+        ShootBackward();
     }
 
     void EnemyBehavior()
@@ -87,6 +78,7 @@ public class Enemy : MonoBehaviour
         {
             float randomX = Random.Range(-9, 9);
             transform.position = new Vector3(randomX, 7.5f, 0);
+            _hasShootBackward = false;
         }
 
     }
@@ -95,53 +87,51 @@ public class Enemy : MonoBehaviour
     {
         if (Time.time > _canShoot)
         {
-            float positionToInstatiate;
             _fireRate = Random.Range(3f, 7f);
             _canShoot = Time.time + _fireRate;
 
-            positionToInstatiate = transform.position.y - 0.6f;
-            GameObject enemyLaser = Instantiate(_laserPrefab, new Vector3(transform.position.x, positionToInstatiate, 0), Quaternion.identity);
+            float positionToInstantiateY = transform.position.y - 1.12f;
+            float positionToInstantiateX = transform.position.x - 0.021f;
+            GameObject enemyLaser = Instantiate(_laserPrefab, new Vector3(positionToInstantiateX, positionToInstantiateY, 0), Quaternion.identity);
             Laser lasers = enemyLaser.GetComponent<Laser>();
             lasers.AssignEnemyLaser();
         }
     }
 
-    private void FollowPlayer()
+    private void ShootBackward()
     {
         if (_player != null)
         {
-            Vector3 distance = _player.gameObject.transform.position - transform.position;
+            Vector2 distance = _player.transform.position - transform.position;
+            float clamp = Mathf.Clamp(distance.x, -2.0f, 2.0f);
 
-            if (Vector2.Distance(transform.position, _player.gameObject.transform.position) < 3.0)
+            if (clamp < 1.5f && clamp > -1.5f && !_hasShootBackward && transform.position.y < _player.transform.position.y - 1.0f)
             {
-                if (distance.y < 1.0f)
-                {
-                    if (distance.x >= -2.5 && distance.x < 0)
-                    {
-                        transform.Translate(Vector3.left * (_speed / 3f) * Time.deltaTime);
-                    }
-                    else if (distance.x <= 2.5 && distance.x > 0)
-                    {
-                        transform.Translate(Vector2.right * (_speed / 3f) * Time.deltaTime);
-                    }
-                }
+                float positionToInstantiateY = transform.position.y + 1.233f;
+                float positionToInstantiateX = transform.position.x - 0.021f;
+                GameObject enemyLaser = Instantiate(_laserPrefab, new Vector3(positionToInstantiateX, positionToInstantiateY, 0), Quaternion.identity);
+                Laser lasers = enemyLaser.GetComponent<Laser>();
+                lasers.AssignEnemyLaser();
+                lasers.ShootingBackwards();
+                _hasShootBackward = true;
             }
         }
+        
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Player")
         {
-          
+
             if (_player != null)
                 _player.Damage();
             _anim.SetTrigger("OnEnemyDeath");
             _speed = 0;
             _isDestroyed = true;
-            EnemiesEliminated++;
+            Enemy.EnemiesEliminated++;
             CheckForNextWave();
-            _audioSource.Play();
+            Instantiate(_explosion, transform.position, Quaternion.identity);
             Destroy(_collider2D);
             Destroy(this.gameObject, 2.8f);
         }
@@ -151,13 +141,13 @@ public class Enemy : MonoBehaviour
 
             if (_player != null)
                 _player.AddScore(10);
-            
+
             _anim.SetTrigger("OnEnemyDeath");
             _speed = 0;
             _isDestroyed = true;
-            EnemiesEliminated++;
+            Enemy.EnemiesEliminated++;
             CheckForNextWave();
-            _audioSource.Play();
+            Instantiate(_explosion, transform.position, Quaternion.identity);
             Destroy(_collider2D);
             Destroy(this.gameObject, 2.8f);
             Destroy(other.gameObject);
@@ -169,10 +159,10 @@ public class Enemy : MonoBehaviour
     {
         if (!_gameManager.GameCompleted)
         {
-            if (EnemiesEliminated == _spawnManger.wavesEnemies[_spawnManger.CurrentWave])
+            if (Enemy.EnemiesEliminated == _spawnManger.wavesEnemies[_spawnManger.CurrentWave])
             {
                 _spawnManger.CompletedWave();
-                EnemiesEliminated = 0;
+                Enemy.EnemiesEliminated = 0;
 
                 if (SpawnManager.WavesCount == _spawnManger.CurrentWave)
                 {
@@ -184,7 +174,7 @@ public class Enemy : MonoBehaviour
 
     public void ResetEliminatedEnemies()
     {
-        EnemiesEliminated = 0;
+        Enemy.EnemiesEliminated = 0;
     }
 
 }

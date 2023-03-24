@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyDiamondMovement : MonoBehaviour
 {
-    [SerializeField] private float _speed = 3.0f;
+    [SerializeField] private float _speed = 3.5f;
     [SerializeField] private GameObject _explosion;
     [SerializeField] private GameObject _laserPrefab;
 
@@ -198,12 +198,12 @@ public class EnemyDiamondMovement : MonoBehaviour
     {
         if (Time.time > _canShoot)
         {
-            float positionToInstatiate;
             _fireRate = Random.Range(3f, 7f);
             _canShoot = Time.time + _fireRate;
 
-            positionToInstatiate = transform.position.y - 0.6f;
-            GameObject enemyLaser = Instantiate(_laserPrefab, new Vector3(transform.position.x, positionToInstatiate, 0), Quaternion.identity);
+            float positionToInstantiateY = transform.position.y - 1.04f;
+            float positionToInstantiateX = transform.position.x + 0.01f;
+            GameObject enemyLaser = Instantiate(_laserPrefab, new Vector3(positionToInstantiateX, positionToInstantiateY, 0), Quaternion.identity);
             Laser lasers = enemyLaser.GetComponent<Laser>();
             lasers.AssignEnemyLaser();
             StartCoroutine(FireSecondLaserRoutine());
