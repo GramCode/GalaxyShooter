@@ -9,6 +9,8 @@ public class PowerUp : MonoBehaviour
     [SerializeField] private AudioClip _clip;
 
     private UIManager _uiManager;
+    private bool _hasDestroyedPowerup = false;
+
 
     private void Start()
     {
@@ -17,6 +19,7 @@ public class PowerUp : MonoBehaviour
         {
             Debug.LogError("UI Manager in PowerUp is NULL");
         }
+
     }
 
     void Update()
@@ -32,6 +35,7 @@ public class PowerUp : MonoBehaviour
 
         if (transform.position.y < pos)
         {
+            _hasDestroyedPowerup = true;
             Destroy(this.gameObject);
         }
     }
@@ -41,8 +45,8 @@ public class PowerUp : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             Player player = other.gameObject.GetComponent<Player>();
-
             AudioSource.PlayClipAtPoint(_clip, transform.position);
+            _hasDestroyedPowerup = true;
 
             if(player != null)
             {
@@ -84,6 +88,21 @@ public class PowerUp : MonoBehaviour
 
             Destroy(this.gameObject);
         }
+
+        if (other.CompareTag("EnemyLaser"))
+        {
+            Destroy(other.gameObject);
+            Destroy(this.gameObject);
+        }
     }
 
+    public bool PowerupWasDestroyed()
+    {
+        return _hasDestroyedPowerup;
+    }
+
+    public Vector3 GetPosition()
+    {
+        return transform.position;
+    }
 }

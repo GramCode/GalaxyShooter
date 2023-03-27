@@ -5,7 +5,7 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     [SerializeField]
-    private GameObject[] _enemiesPrefab; //Default, Blaster, Follower
+    private GameObject[] _enemiesPrefab; //Default, Blaster, Follower, Shoot Backward
     [SerializeField]
     private GameObject _enemyContainer;
     [SerializeField]
@@ -18,6 +18,10 @@ public class SpawnManager : MonoBehaviour
     private UIManager _uIManager;
     private GameManager _gameManager;
     private GameObject _enemy;
+    private GameObject _spawnedPowerup;
+    private GameObject _enemySpawned;
+    private EnemyShootBackwards _enemyShootBackwards;
+
     [HideInInspector]
     public List<int> wavesEnemies = new List<int>();
 
@@ -53,6 +57,13 @@ public class SpawnManager : MonoBehaviour
             Debug.LogError("GameManager in SpawnManager is NULL");
         }
 
+        _enemyShootBackwards = _enemiesPrefab[3].GetComponent<EnemyShootBackwards>();
+        if(_enemyShootBackwards == null)
+        {
+            Debug.LogError("EnemyShootBackwards in Spawn Manager is NULL");
+        }
+
+
         WavesCount = 8;
 
         for (int i = 1; i <= WavesCount; i++)
@@ -68,6 +79,11 @@ public class SpawnManager : MonoBehaviour
         _enemiesType[3] = EnemyType.ShootBackward;
     }
 
+    private void Update()
+    {
+        GetPosition();
+    }
+
     public void StartSpawning()
     {
         StartCoroutine(RandomPositionRoutine());
@@ -79,8 +95,8 @@ public class SpawnManager : MonoBehaviour
     {
         while (true)
         {
-            _posToSpawnEnemy = new Vector3(Random.Range(-8f, 8f), 7, 0);
-            _posToSpawnPowerup = new Vector3(Random.Range(-8f, 8f), 7, 0);
+            _posToSpawnEnemy = new Vector3(Random.Range(-8.0f, 8.0f), 7, 0);
+            _posToSpawnPowerup = new Vector3(Random.Range(-8.0f, 8.0f), 7, 0);
             yield return new WaitForSeconds(2.8f);
         }
     }
@@ -95,8 +111,8 @@ public class SpawnManager : MonoBehaviour
             {
                 TypeOfEnemy(GetEnemyType());
                 EnemiesSpawned++;
-                GameObject newEnemy = Instantiate(_enemiesPrefab[3], _posToSpawnEnemy, Quaternion.identity);
-                newEnemy.transform.parent = _enemyContainer.transform;                
+                _enemySpawned = Instantiate(_enemy, _posToSpawnEnemy, Quaternion.identity);
+                _enemySpawned.transform.parent = _enemyContainer.transform;                
             }
             else
             {
@@ -154,7 +170,6 @@ public class SpawnManager : MonoBehaviour
         {
             enemyType = EnemyType.FireTwice;
         }
-        Debug.Log("enemy percent is: " + percent);
         return enemyType;
     }
 
@@ -164,7 +179,7 @@ public class SpawnManager : MonoBehaviour
 
         while (_stopSpawningPowerup == false)
         {
-            Instantiate(_powerups[GetPowerupIndex()], _posToSpawnPowerup, Quaternion.identity);
+            _spawnedPowerup = Instantiate(_powerups[GetPowerupIndex()], _posToSpawnPowerup, Quaternion.identity);
             yield return new WaitForSeconds(Random.Range(3, 8));
         }
         
@@ -194,8 +209,12 @@ public class SpawnManager : MonoBehaviour
         {
             randomPowerup = 4;
         }
-        Debug.Log("Powerup percent is: " + number);
         return randomPowerup;
+    }
+
+    public Vector3 PowerupPosition()
+    {
+        return _spawnedPowerup.transform.position;
     }
 
     public void OnPlayerDeath()
@@ -243,5 +262,54 @@ public class SpawnManager : MonoBehaviour
         _stopSpawningEnemy = true;
         _stopSpawningPowerup = true;
     }
+
+    private void GetPosition()
+    {
+        Vector3 enemyPosition;
+        Vector3 powerupPosition;
+
+
+        if (_spawnedPowerup != null && _enemySpawned != null)
+        {
+            PowerUp powerUp = _spawnedPowerup.GetComponent<PowerUp>();
+            EnemyShootBackwards enemyShootBackwards = _enemySpawned.GetComponent<EnemyShootBackwards>();
+            Enemy enemy = _enemySpawned.GetComponent<Enemy>();
+
+            if (enemyShootBackwards != null)
+            {
+                enemyPosition = enemyShootBackwards.GetPosition();
+                powerupPosition = powerUp.GetPosition();
+
+
+                if (powerupPosition.x > enemyPosition.x - 0.8f && powerupPosition.x < enemyPosition.x + 0.8f && powerupPosition.y < enemyPosition.y - 2.0f)
+                {
+
+                    enemyShootBackwards.Shoot();
+                    enemyShootBackwards.ShootPowerUp();
+
+                }
+            }
+
+            if (enemy != null)
+            {
+                enemyPosition = enemy.GetPosition();
+                powerupPosition = powerUp.GetPosition();
+
+
+                if (powerupPosition.x > enemyPosition.x - 0.8f && powerupPosition.x < enemyPosition.x + 0.8f && powerupPosition.y < enemyPosition.y - 2.0f)
+                {
+
+                    enemy.Shoot();
+                    enemy.ShootPowerUp();
+
+                }
+            }
+            
+
+        }
+
+    }
+
+
 
 }

@@ -17,7 +17,10 @@ public class Enemy : MonoBehaviour
     private Animator _anim;
     private float _fireRate = 3.0f;
     private float _canShoot = -1;
+    private float _fireToPowerupRate = 4.0f;
+    private float _canShootToPowerup = -1;
     private bool _isDestroyed = false;
+    private bool _canShootPowerup = false;
     private SpawnManager _spawnManger;
     private GameManager _gameManager;
 
@@ -85,7 +88,7 @@ public class Enemy : MonoBehaviour
 
         if (transform.position.y < -5.6f)
         {
-            float randomX = Random.Range(-9, 9);
+            float randomX = Random.Range(-8, 8);
             transform.position = new Vector3(randomX, 7.5f, 0);
         }
 
@@ -187,4 +190,27 @@ public class Enemy : MonoBehaviour
         EnemiesEliminated = 0;
     }
 
+    public Vector3 GetPosition()
+    {
+        return transform.position;
+    }
+
+    public void ShootPowerUp()
+    {
+        if (_canShootPowerup && Time.time > _canShootToPowerup)
+        {
+            _canShootToPowerup = Time.time + _fireToPowerupRate;
+            float positionToInstantiateY = transform.position.y - 1.12f;
+            float positionToInstantiateX = transform.position.x - 0.021f;
+            GameObject enemyLaser = Instantiate(_laserPrefab, new Vector3(positionToInstantiateX, positionToInstantiateY, 0), Quaternion.identity);
+            Laser lasers = enemyLaser.GetComponent<Laser>();
+            lasers.AssignEnemyLaser();
+            _canShootPowerup = false;
+        }
+    }
+
+    public void Shoot()
+    {
+        _canShootPowerup = true;
+    }
 }

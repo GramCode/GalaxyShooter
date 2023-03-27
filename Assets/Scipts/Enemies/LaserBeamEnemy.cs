@@ -58,9 +58,6 @@ public class LaserBeamEnemy : MonoBehaviour
     {
         EnemyBehavior();
         EnemyBounds();
-        
-       
-        
     }
 
     void EnemyBehavior()
@@ -92,7 +89,7 @@ public class LaserBeamEnemy : MonoBehaviour
 
         if (transform.position.y < -5.6f)
         {
-            float randomX = Random.Range(-9, 9);
+            float randomX = Random.Range(-8, 8);
             transform.position = new Vector3(randomX, 7.5f, 0);
             _hasMovedHorizontally = false;
             randomVector = vectors[Random.Range(0, 2)];

@@ -7,6 +7,9 @@ TagManager:
   - Enemy
   - Laser
   - EnemyShield
+  - Powerup
+  - Undefined
+  - EnemyLaser
   layers:
   - Default
   - TransparentFX
