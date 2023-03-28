@@ -9,8 +9,8 @@ public class PowerUp : MonoBehaviour
     [SerializeField] private AudioClip _clip;
 
     private UIManager _uiManager;
-    private bool _hasDestroyedPowerup = false;
-
+    private bool _moveToPlayer = false;
+    private GameObject _player;
 
     private void Start()
     {
@@ -20,14 +20,20 @@ public class PowerUp : MonoBehaviour
             Debug.LogError("UI Manager in PowerUp is NULL");
         }
 
+        _player = GameObject.Find("Player");
+        if (_player == null)
+        {
+            Debug.LogError("The player game object is NULL in the powerup script");
+        }
     }
 
-    void Update()
+    private void Update()
     {
         PowerUpBehavior();
+        MoveToPlayer();
     }
 
-    void PowerUpBehavior()
+    private void PowerUpBehavior()
     {
         float pos = -5.8f;
 
@@ -35,9 +41,27 @@ public class PowerUp : MonoBehaviour
 
         if (transform.position.y < pos)
         {
-            _hasDestroyedPowerup = true;
             Destroy(this.gameObject);
         }
+    }
+
+    private void MoveToPlayer()
+    {
+        //Get the player position
+        //Move toward the player
+        if (Input.GetKey(KeyCode.C))
+        {
+            _moveToPlayer = true;
+            
+        }
+
+        if (_moveToPlayer == true)
+        {
+            Vector3 playerPosition = _player.transform.position;
+            transform.position = Vector3.MoveTowards(transform.position, playerPosition, (_speed * 2) * Time.deltaTime);
+        }
+        
+        
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -46,7 +70,6 @@ public class PowerUp : MonoBehaviour
         {
             Player player = other.gameObject.GetComponent<Player>();
             AudioSource.PlayClipAtPoint(_clip, transform.position);
-            _hasDestroyedPowerup = true;
 
             if(player != null)
             {
@@ -94,11 +117,6 @@ public class PowerUp : MonoBehaviour
             Destroy(other.gameObject);
             Destroy(this.gameObject);
         }
-    }
-
-    public bool PowerupWasDestroyed()
-    {
-        return _hasDestroyedPowerup;
     }
 
     public Vector3 GetPosition()
