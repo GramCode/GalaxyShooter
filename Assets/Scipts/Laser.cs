@@ -100,4 +100,9 @@ public class Laser : MonoBehaviour
             }
         }
     }
+
+    public Vector3 LaserPosition()
+    {
+        return transform.position;
+    }
 }

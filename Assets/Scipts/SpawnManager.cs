@@ -20,7 +20,6 @@ public class SpawnManager : MonoBehaviour
     private GameObject _enemy;
     private GameObject _spawnedPowerup;
     private GameObject _enemySpawned;
-    private EnemyShootBackwards _enemyShootBackwards;
 
     [HideInInspector]
     public List<int> wavesEnemies = new List<int>();
@@ -35,10 +34,11 @@ public class SpawnManager : MonoBehaviour
         Default,
         LaserBeam,
         FireTwice,
-        ShootBackward
+        ShootBackward,
+        AvoidShot
     }
 
-    private EnemyType[] _enemiesType = new EnemyType[4];
+    private EnemyType[] _enemiesType = new EnemyType[5];
 
     void Start()
     {
@@ -57,13 +57,6 @@ public class SpawnManager : MonoBehaviour
             Debug.LogError("GameManager in SpawnManager is NULL");
         }
 
-        _enemyShootBackwards = _enemiesPrefab[3].GetComponent<EnemyShootBackwards>();
-        if(_enemyShootBackwards == null)
-        {
-            Debug.LogError("EnemyShootBackwards in Spawn Manager is NULL");
-        }
-
-
         WavesCount = 8;
 
         for (int i = 1; i <= WavesCount; i++)
@@ -77,6 +70,7 @@ public class SpawnManager : MonoBehaviour
         _enemiesType[1] = EnemyType.LaserBeam;
         _enemiesType[2] = EnemyType.FireTwice;
         _enemiesType[3] = EnemyType.ShootBackward;
+        _enemiesType[4] = EnemyType.AvoidShot;
     }
 
     private void Update()
@@ -143,6 +137,9 @@ public class SpawnManager : MonoBehaviour
             case EnemyType.ShootBackward:
                 _enemy = _enemiesPrefab[3];
                 break;
+            case EnemyType.AvoidShot:
+                _enemy = _enemiesPrefab[4];
+                break;
             default:
                 _enemy = _enemiesPrefab[0];
                 break;
@@ -154,21 +151,25 @@ public class SpawnManager : MonoBehaviour
         int percent = Random.Range(0, 101);
         EnemyType enemyType;
 
-        if (percent <= 50)
+        if (percent <= 40)
         {
             enemyType = EnemyType.Default;
         }
-        else if (percent > 50 && percent <= 70)
+        else if (percent > 40 && percent <= 55)
         {
             enemyType = EnemyType.LaserBeam;
         }
-        else if (percent > 70 && percent <= 90)
+        else if (percent > 55 && percent <= 70)
         {
             enemyType = EnemyType.ShootBackward;
         }
-        else
+        else if (percent > 70 && percent <= 80)
         {
             enemyType = EnemyType.FireTwice;
+        }
+        else
+        {
+            enemyType = EnemyType.AvoidShot;
         }
         return enemyType;
     }

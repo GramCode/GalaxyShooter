@@ -7,7 +7,6 @@ public class EnemyShootBackwards : MonoBehaviour
 
     [SerializeField] private float _speed = 3.5f;
     [SerializeField] private GameObject _laserPrefab;
-    [SerializeField] private AudioClip _laserAudioClip;
     [SerializeField] private GameObject _laserBeamPrefab;
     [SerializeField] private GameObject _explosion;
 

@@ -9,7 +9,7 @@ public class PowerUp : MonoBehaviour
     [SerializeField] private AudioClip _clip;
 
     private UIManager _uiManager;
-    private bool _moveToPlayer = false;
+    private bool _moveTowardsPlayer = false;
     private GameObject _player;
 
     private void Start()
@@ -47,15 +47,13 @@ public class PowerUp : MonoBehaviour
 
     private void MoveToPlayer()
     {
-        //Get the player position
-        //Move toward the player
+
         if (Input.GetKey(KeyCode.C))
         {
-            _moveToPlayer = true;
-            
+            _moveTowardsPlayer = true;
         }
 
-        if (_moveToPlayer == true)
+        if (_moveTowardsPlayer == true)
         {
             Vector3 playerPosition = _player.transform.position;
             transform.position = Vector3.MoveTowards(transform.position, playerPosition, (_speed * 2) * Time.deltaTime);

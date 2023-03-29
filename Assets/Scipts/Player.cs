@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
     private AudioSource _audioSource;
     private GameManager _gameManager;
     private Asteroid _asterioid;
+    private GameObject _laser;
 
     private float _speedMultiplier = 2f;
     private float _fireRate = 0.5f;
@@ -143,7 +144,7 @@ public class Player : MonoBehaviour
                 else
                 {
                     //Fire just one laser
-                    Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
+                    _laser = Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
                 }
 
                 if (_asterioid.HasDestroyedAsteroid)
@@ -438,5 +439,17 @@ public class Player : MonoBehaviour
     public bool GetNegativeSpeed()
     {
         return _isNegativeSpeedActive;
+    }
+
+    public GameObject LaserPosition()
+    {
+        if (_laser != null)
+        {
+            return _laser;
+        }
+        else
+        {
+            return null;
+        }
     }
 }

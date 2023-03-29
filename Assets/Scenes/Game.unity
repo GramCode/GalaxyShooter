@@ -1025,6 +1025,7 @@ MonoBehaviour:
   - {fileID: 1913537181160908072, guid: c0ff8123cecd34564b4073be6149d410, type: 3}
   - {fileID: 1913537181160908072, guid: bddbca4aee7124721a24ac7a6d708d41, type: 3}
   - {fileID: 8657330716615221418, guid: b3a99aca98b14469bba5dc880c9b386b, type: 3}
+  - {fileID: 4684161804361834942, guid: c2b3cacb79d6044999f072f728d05e66, type: 3}
   _enemyContainer: {fileID: 896451662}
   _powerups:
   - {fileID: 581714895718332740, guid: 98ed0b28d6cfe4441a462d7fc2d8cc0b, type: 3}

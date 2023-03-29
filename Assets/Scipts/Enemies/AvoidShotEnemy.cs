@@ -2,15 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class AvoidShotEnemy : MonoBehaviour
 {
-
     [SerializeField] private float _speed = 3.5f;
-    [SerializeField] private GameObject _laserPrefab;
-    [SerializeField] private GameObject _laserBeamPrefab;
+    [SerializeField] private GameObject _alienTwoLaserPrefab;
     [SerializeField] private GameObject _explosion;
 
-    private AudioSource _audioSource;
     private Player _player;
     private Collider2D _collider2D;
     private Animator _anim;
@@ -22,8 +19,7 @@ public class Enemy : MonoBehaviour
     private bool _canShootPowerup = false;
     private SpawnManager _spawnManger;
     private GameManager _gameManager;
-
-    public static int EnemiesEliminated { get; set; }
+    private float _dir;
 
     private void Start()
     {
@@ -39,12 +35,6 @@ public class Enemy : MonoBehaviour
             Debug.LogError("Animator component of Enemy not found.");
         }
 
-        _audioSource = GetComponent<AudioSource>();
-        if (_audioSource == null)
-        {
-            Debug.LogError("AudioSource on Enemy is NULL.");
-        }
-       
         _collider2D = GetComponent<Collider2D>();
         if (_collider2D == null)
         {
@@ -63,6 +53,8 @@ public class Enemy : MonoBehaviour
             Debug.LogError("Game Manager in Enemy is NULL");
         }
 
+        _dir = Random.Range(0, 2);
+
     }
 
 
@@ -75,9 +67,10 @@ public class Enemy : MonoBehaviour
         if (!_isDestroyed)
         {
             FireLaser();
-            FollowPlayer();
+            AvoidLaser();
         }
-        
+
+
     }
 
     void EnemyBehavior()
@@ -88,45 +81,43 @@ public class Enemy : MonoBehaviour
         {
             float randomX = Random.Range(-8, 8);
             transform.position = new Vector3(randomX, 7.5f, 0);
+            _dir = Random.Range(0, 2);
         }
 
     }
 
-    public void FireLaser()
+    private void FireLaser()
     {
         if (Time.time > _canShoot)
         {
-            float positionToInstatiate;
             _fireRate = Random.Range(3f, 7f);
             _canShoot = Time.time + _fireRate;
 
-            positionToInstatiate = transform.position.y - 0.6f;
-            GameObject enemyLaser = Instantiate(_laserPrefab, new Vector3(transform.position.x, positionToInstatiate, 0), Quaternion.identity);
+            float positionToInstantiateY = transform.position.y - 0.7f;
+            float positionToInstantiateX = transform.position.x + 0.065f;
+            GameObject enemyLaser = Instantiate(_alienTwoLaserPrefab, new Vector3(positionToInstantiateX, positionToInstantiateY, 0), Quaternion.identity);
             Laser lasers = enemyLaser.GetComponent<Laser>();
             lasers.AssignEnemyLaser();
+            _canShootPowerup = false;
         }
     }
 
-    private void FollowPlayer()
+    private void AvoidLaser()
     {
-        if (_player != null)
+        if (_player.LaserPosition() != null)
         {
-            Vector3 distance = _player.gameObject.transform.position - transform.position;
-
-            if (Vector2.Distance(transform.position, _player.gameObject.transform.position) < 3.0)
+            if (_player.LaserPosition().transform.position.x < transform.position.x + 1f && _player.LaserPosition().transform.position.x > transform.position.x - 1f)
             {
-                if (distance.y < 1.0f)
+                if (_dir == 0)
                 {
-                    if (distance.x >= -2.5 && distance.x < 0)
-                    {
-                        transform.Translate(Vector3.left * (_speed / 3f) * Time.deltaTime);
-                    }
-                    else if (distance.x <= 2.5 && distance.x > 0)
-                    {
-                        transform.Translate(Vector2.right * (_speed / 3f) * Time.deltaTime);
-                    }
+                    transform.Translate(Vector3.left * (_speed * 1.5f) * Time.deltaTime);
+                }
+                else
+                {
+                    transform.Translate(Vector3.right * (_speed * 1.5f) * Time.deltaTime);
                 }
             }
+
         }
     }
 
@@ -134,15 +125,15 @@ public class Enemy : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-          
+
             if (_player != null)
                 _player.Damage();
             _anim.SetTrigger("OnEnemyDeath");
             _speed = 0;
             _isDestroyed = true;
-            EnemiesEliminated++;
+            Enemy.EnemiesEliminated++;
             CheckForNextWave();
-            _audioSource.Play();
+            Instantiate(_explosion, transform.position, Quaternion.identity);
             Destroy(_collider2D);
             Destroy(this.gameObject, 2.8f);
         }
@@ -152,13 +143,13 @@ public class Enemy : MonoBehaviour
 
             if (_player != null)
                 _player.AddScore(10);
-            
+
             _anim.SetTrigger("OnEnemyDeath");
             _speed = 0;
             _isDestroyed = true;
-            EnemiesEliminated++;
+            Enemy.EnemiesEliminated++;
             CheckForNextWave();
-            _audioSource.Play();
+            Instantiate(_explosion, transform.position, Quaternion.identity);
             Destroy(_collider2D);
             Destroy(this.gameObject, 2.8f);
             Destroy(other.gameObject);
@@ -170,10 +161,10 @@ public class Enemy : MonoBehaviour
     {
         if (!_gameManager.GameCompleted)
         {
-            if (EnemiesEliminated == _spawnManger.wavesEnemies[_spawnManger.CurrentWave])
+            if (Enemy.EnemiesEliminated == _spawnManger.wavesEnemies[_spawnManger.CurrentWave])
             {
                 _spawnManger.CompletedWave();
-                EnemiesEliminated = 0;
+                Enemy.EnemiesEliminated = 0;
 
                 if (SpawnManager.WavesCount == _spawnManger.CurrentWave)
                 {
@@ -185,7 +176,7 @@ public class Enemy : MonoBehaviour
 
     public void ResetEliminatedEnemies()
     {
-        EnemiesEliminated = 0;
+        Enemy.EnemiesEliminated = 0;
     }
 
     public Vector3 GetPosition()
@@ -195,12 +186,12 @@ public class Enemy : MonoBehaviour
 
     public void ShootPowerUp()
     {
-        if (_canShootPowerup && Time.time > _canShootToPowerup && _canShootPowerup)
+        if (_canShootPowerup && Time.time > _canShootToPowerup)
         {
             _canShootToPowerup = Time.time + _fireToPowerupRate;
-            float positionToInstantiateY = transform.position.y - 1.12f;
-            float positionToInstantiateX = transform.position.x - 0.021f;
-            GameObject enemyLaser = Instantiate(_laserPrefab, new Vector3(positionToInstantiateX, positionToInstantiateY, 0), Quaternion.identity);
+            float positionToInstantiateY = transform.position.y - 0.7f;
+            float positionToInstantiateX = transform.position.x + 0.065f;
+            GameObject enemyLaser = Instantiate(_alienTwoLaserPrefab, new Vector3(positionToInstantiateX, positionToInstantiateY, 0), Quaternion.identity);
             Laser lasers = enemyLaser.GetComponent<Laser>();
             lasers.AssignEnemyLaser();
             _canShootPowerup = false;
