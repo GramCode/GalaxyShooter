@@ -151,10 +151,48 @@ public class AvoidShotEnemy : MonoBehaviour
             CheckForNextWave();
             Instantiate(_explosion, transform.position, Quaternion.identity);
             Destroy(_collider2D);
-            Destroy(this.gameObject, 2.8f);
+            Destroy(this.gameObject, 0.2f);
             Destroy(other.gameObject);
         }
 
+
+        if (other.CompareTag("Projectile"))
+        {
+
+            if (_player != null)
+            {
+                _player.AddScore(10);
+                _player.projectileHasBeenShot = false;
+                _player.DontShootProjectile();
+            }
+
+            _anim.SetTrigger("OnEnemyDeath");
+            _speed = 0;
+            _isDestroyed = true;
+            Enemy.EnemiesEliminated++;
+            CheckForNextWave();
+            Instantiate(_explosion, transform.position, Quaternion.identity);
+            _spawnManger.enemies.Remove(this.gameObject);
+            _player.HideTargetRange();
+
+            if (this.gameObject.transform.GetChild(0).gameObject != null)
+            {
+                Destroy(this.gameObject.transform.GetChild(0).gameObject);
+            }
+            else
+            {
+                foreach (var enemy in _spawnManger.enemies)
+                {
+                    if (enemy.transform.GetChild(0).gameObject != null)
+                    {
+                        Destroy(enemy.transform.GetChild(0).gameObject);
+                    }
+                }
+            }
+            Destroy(_collider2D);
+            Destroy(this.gameObject, 0.2f);
+            Destroy(other.gameObject);
+        }
     }
 
     private void CheckForNextWave()
@@ -179,9 +217,9 @@ public class AvoidShotEnemy : MonoBehaviour
         Enemy.EnemiesEliminated = 0;
     }
 
-    public Vector3 GetPosition()
+    public Transform GetTransform()
     {
-        return transform.position;
+        return transform;
     }
 
     public void ShootPowerUp()
@@ -197,7 +235,7 @@ public class AvoidShotEnemy : MonoBehaviour
             _canShootPowerup = false;
         }
     }
-
+   
     public void Shoot()
     {
         _canShootPowerup = true;

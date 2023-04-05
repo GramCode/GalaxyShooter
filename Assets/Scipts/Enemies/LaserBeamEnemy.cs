@@ -56,8 +56,12 @@ public class LaserBeamEnemy : MonoBehaviour
 
     private void Update()
     {
-        EnemyBehavior();
-        EnemyBounds();
+        if (!_isDestroyed)
+        {
+            EnemyBehavior();
+            EnemyBounds();
+        }
+        
     }
 
     void EnemyBehavior()
@@ -185,6 +189,42 @@ public class LaserBeamEnemy : MonoBehaviour
             Destroy(other.gameObject);
         }
 
+        if (other.CompareTag("Projectile"))
+        {
+
+            if (_player != null)
+            {
+                _player.AddScore(10);
+                _player.projectileHasBeenShot = false;
+                _player.DontShootProjectile();
+            }
+
+            _speed = 0;
+            _isDestroyed = true;
+            Enemy.EnemiesEliminated++;
+            CheckForNextWave();
+            Instantiate(_explosion, transform.position, Quaternion.identity);
+            _spawnManger.enemies.Remove(this.gameObject);
+            _player.HideTargetRange();
+
+            if (this.gameObject.transform.GetChild(0).gameObject != null)
+            {
+                Destroy(this.gameObject.transform.GetChild(0).gameObject);
+            }
+            else
+            {
+                foreach (var enemy in _spawnManger.enemies)
+                {
+                    if (enemy.transform.GetChild(0).gameObject != null)
+                    {
+                        Destroy(enemy.transform.GetChild(0).gameObject);
+                    }
+                }
+            }
+            Destroy(_collider2D);
+            Destroy(this.gameObject, 0.2f);
+            Destroy(other.gameObject);
+        }
     }
 
     private void CheckForNextWave()
@@ -202,5 +242,10 @@ public class LaserBeamEnemy : MonoBehaviour
                 }
             }
         }
+    }
+
+    public Transform GetTransform()
+    {
+        return transform;
     }
 }

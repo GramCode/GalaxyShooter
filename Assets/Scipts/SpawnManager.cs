@@ -19,10 +19,13 @@ public class SpawnManager : MonoBehaviour
     private GameManager _gameManager;
     private GameObject _enemy;
     private GameObject _spawnedPowerup;
-    private GameObject _enemySpawned;
+    [HideInInspector]
+    public GameObject EnemySpawned;
 
     [HideInInspector]
     public List<int> wavesEnemies = new List<int>();
+    [HideInInspector]
+    public List<GameObject> enemies;
 
     public static int WavesCount { get; private set; } 
     public int CurrentWave { get; private set; }
@@ -105,8 +108,9 @@ public class SpawnManager : MonoBehaviour
             {
                 TypeOfEnemy(GetEnemyType());
                 EnemiesSpawned++;
-                _enemySpawned = Instantiate(_enemy, _posToSpawnEnemy, Quaternion.identity);
-                _enemySpawned.transform.parent = _enemyContainer.transform;                
+                EnemySpawned = Instantiate(_enemy, _posToSpawnEnemy, Quaternion.identity);
+                EnemySpawned.transform.parent = _enemyContainer.transform;
+                enemies.Add(EnemySpawned);
             }
             else
             {
@@ -204,7 +208,7 @@ public class SpawnManager : MonoBehaviour
         }
         else if (number > 70 && number <= 90)
         {
-            randomPowerup = 6;
+            randomPowerup = Random.Range(6, 8);
         }
         else
         {
@@ -222,6 +226,7 @@ public class SpawnManager : MonoBehaviour
     {
         _stopSpawningEnemy = true;
         _stopSpawningPowerup = true;
+        enemies.Clear();
     }
 
     public void CompletedWave()
@@ -266,23 +271,24 @@ public class SpawnManager : MonoBehaviour
 
     private void GetPosition()
     {
-        Vector3 enemyPosition;
+        Transform enemy;
         Vector3 powerupPosition;
 
 
-        if (_spawnedPowerup != null && _enemySpawned != null)
+        if (_spawnedPowerup != null && EnemySpawned != null)
         {
             PowerUp powerUp = _spawnedPowerup.GetComponent<PowerUp>();
-            EnemyShootBackwards enemyShootBackwards = _enemySpawned.GetComponent<EnemyShootBackwards>();
-            Enemy enemy = _enemySpawned.GetComponent<Enemy>();
+            EnemyShootBackwards enemyShootBackwards = EnemySpawned.GetComponent<EnemyShootBackwards>();
+            Enemy enemyScript = EnemySpawned.GetComponent<Enemy>();
+            AvoidShotEnemy avoidShotEnemy = EnemySpawned.GetComponent<AvoidShotEnemy>();
 
             if (enemyShootBackwards != null)
             {
-                enemyPosition = enemyShootBackwards.GetPosition();
+                enemy = enemyShootBackwards.GetTransform();
                 powerupPosition = powerUp.GetPosition();
 
 
-                if (powerupPosition.x > enemyPosition.x - 0.8f && powerupPosition.x < enemyPosition.x + 0.8f && powerupPosition.y < enemyPosition.y - 2.0f)
+                if (powerupPosition.x > enemy.position.x - 0.8f && powerupPosition.x < enemy.position.x + 0.8f && powerupPosition.y < enemy.position.y - 2.0f)
                 {
 
                     enemyShootBackwards.Shoot();
@@ -291,26 +297,40 @@ public class SpawnManager : MonoBehaviour
                 }
             }
 
-            if (enemy != null)
+            if (enemyScript != null)
             {
-                enemyPosition = enemy.GetPosition();
+                enemy = enemyScript.GetTransform();
                 powerupPosition = powerUp.GetPosition();
 
 
-                if (powerupPosition.x > enemyPosition.x - 0.8f && powerupPosition.x < enemyPosition.x + 0.8f && powerupPosition.y < enemyPosition.y - 2.0f)
+                if (powerupPosition.x > enemy.position.x - 0.8f && powerupPosition.x < enemy.position.x + 0.8f && powerupPosition.y < enemy.position.y - 2.0f)
                 {
 
-                    enemy.Shoot();
-                    enemy.ShootPowerUp();
+                    enemyScript.Shoot();
+                    enemyScript.ShootPowerUp();
 
                 }
             }
-            
 
+            if (avoidShotEnemy != null)
+            {
+                enemy = avoidShotEnemy.GetTransform();
+                powerupPosition = powerUp.GetPosition();
+
+
+                if (powerupPosition.x > enemy.position.x - 0.8f && powerupPosition.x < enemy.position.x + 0.8f && powerupPosition.y < enemy.position.y - 2.0f)
+                {
+
+                    avoidShotEnemy.Shoot();
+                    avoidShotEnemy.ShootPowerUp();
+
+                }
+            }
+
+           
         }
 
     }
-
 
 
 }

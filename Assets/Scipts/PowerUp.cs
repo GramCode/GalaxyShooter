@@ -5,7 +5,7 @@ using UnityEngine;
 public class PowerUp : MonoBehaviour
 {
     [SerializeField] private float _speed = 3.0f;
-    [SerializeField] private int _powerupID; //0 = Triple Shot, 1 = Speed, 2 = Shields, 3 = Bullets, 4 = life, 5 = negative speed, 6 = spread shot
+    [SerializeField] private int _powerupID; //0 = Triple Shot, 1 = Speed, 2 = Shields, 3 = Bullets, 4 = life, 5 = negative speed, 6 = spread shot, 7 = projectile
     [SerializeField] private AudioClip _clip;
 
     private UIManager _uiManager;
@@ -103,6 +103,11 @@ public class PowerUp : MonoBehaviour
                     case 6:
                         player.NegativeSpeedActive();
                         break;
+                    case 7:
+                        _uiManager.DisplayProjectile();
+                        player.ProjectileActive();
+                        player.DisplayTargetRange();
+                        break;
                 }
                 
             }
@@ -121,4 +126,5 @@ public class PowerUp : MonoBehaviour
     {
         return transform.position;
     }
+
 }

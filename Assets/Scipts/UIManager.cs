@@ -17,6 +17,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image _barImage;
     [SerializeField] private List<GameObject> _laserImageUI;
     [SerializeField] private GameObject _pauseMenu;
+    [SerializeField] private GameObject _projectileBackground;
+    [SerializeField] private GameObject _dontSign;
 
     private GameManager _gameManager;
     private Player _player;
@@ -316,8 +318,28 @@ public class UIManager : MonoBehaviour
 
     public void PauseMenu()
     {
-        //GameObject.Find("Gear Icon").SetActive(false);
         Instantiate(_pauseMenu, Vector2.zero, Quaternion.identity);
         Time.timeScale = 0;
+    }
+
+    public void DisplayProjectile()
+    {
+        _projectileBackground.SetActive(true);
+    }
+
+
+    public void HideProjectile()
+    {
+        _projectileBackground.SetActive(false);
+    }
+
+    public void DisplayDontSign()
+    {
+        _dontSign.SetActive(true);
+    }
+
+    public void HideDontSign()
+    {
+        _dontSign.SetActive(false);
     }
 }

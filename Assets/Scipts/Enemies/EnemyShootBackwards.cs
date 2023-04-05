@@ -157,6 +157,44 @@ public class EnemyShootBackwards : MonoBehaviour
             Destroy(other.gameObject);
         }
 
+        if (other.CompareTag("Projectile"))
+        {
+
+            if (_player != null)
+            {
+                _player.AddScore(10);
+                _player.projectileHasBeenShot = false;
+                _player.DontShootProjectile();
+            }
+
+            _anim.SetTrigger("OnEnemyDeath");
+            _speed = 0;
+            _isDestroyed = true;
+            Enemy.EnemiesEliminated++;
+            CheckForNextWave();
+            Instantiate(_explosion, transform.position, Quaternion.identity);
+            _spawnManger.enemies.Remove(this.gameObject);
+            _player.HideTargetRange();
+
+            if (this.gameObject.transform.GetChild(0).gameObject != null)
+            {
+                Destroy(this.gameObject.transform.GetChild(0).gameObject);
+            }
+            else
+            {
+                foreach (var enemy in _spawnManger.enemies)
+                {
+                    if (enemy.transform.GetChild(0).gameObject != null)
+                    {
+                        Destroy(enemy.transform.GetChild(0).gameObject);
+                    }
+                }
+            }
+            Destroy(_collider2D);
+            Destroy(this.gameObject, 2.8f);
+            Destroy(other.gameObject);
+        }
+
     }
 
     private void CheckForNextWave()
@@ -180,12 +218,12 @@ public class EnemyShootBackwards : MonoBehaviour
     {
         Enemy.EnemiesEliminated = 0;
     }
-
-    public Vector3 GetPosition()
+    
+    public Transform GetTransform()
     {
-        return transform.position;
+        return transform;
     }
-
+    
     public void ShootPowerUp()
     {
         if (_canShootPowerup && Time.time > _canShootToPowerup)

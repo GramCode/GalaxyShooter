@@ -24,6 +24,7 @@ public class EnemyDiamondMovement : MonoBehaviour
     private float _fireRate = 3.0f;
     private float _canShoot = -1;
     private bool _isShieldActive = true;
+    private bool _isDestroyed = false;
 
     void Start()
     {
@@ -76,8 +77,12 @@ public class EnemyDiamondMovement : MonoBehaviour
 
     void Update()
     {
-        EnemyBehavior();
-        FireLaser();
+        if (!_isDestroyed)
+        {
+            EnemyBehavior();
+            FireLaser();
+        }
+        
                 
     }
 
@@ -275,11 +280,51 @@ public class EnemyDiamondMovement : MonoBehaviour
             DestroyWaypointsGameObjects();
             Destroy(_collider2D);
             Destroy(this.gameObject, 0.2f);
-            Destroy(other.gameObject);
-            
-            
+            Destroy(other.gameObject);            
         }
 
+        if (other.CompareTag("Projectile"))
+        {
+            if (_isShieldActive)
+            {
+                HideShield();
+                Destroy(other.gameObject);
+                return;
+            }
+
+            if (_player != null)
+            {
+                _player.AddScore(10);
+                _player.projectileHasBeenShot = false;
+                _player.DontShootProjectile();
+            }
+
+            _speed = 0;
+            _isDestroyed = true;
+            Enemy.EnemiesEliminated++;
+            CheckForNextWave();
+            Instantiate(_explosion, transform.position, Quaternion.identity);
+            _spawnManger.enemies.Remove(this.gameObject);
+            _player.HideTargetRange();
+
+            if (this.gameObject.transform.GetChild(0).gameObject != null)
+            {
+                Destroy(this.gameObject.transform.GetChild(0).gameObject);
+            }
+            else
+            {
+                foreach (var enemy in _spawnManger.enemies)
+                {
+                    if (enemy.transform.GetChild(0).gameObject != null)
+                    {
+                        Destroy(enemy.transform.GetChild(0).gameObject);
+                    }
+                }
+            }
+            Destroy(_collider2D);
+            Destroy(this.gameObject, 0.2f);
+            Destroy(other.gameObject);
+        }
     }
 
     private void CheckForNextWave()
@@ -304,4 +349,5 @@ public class EnemyDiamondMovement : MonoBehaviour
         _isShieldActive = false;
         GameObject.FindGameObjectWithTag("EnemyShield").SetActive(false);
     }
+    
 }
