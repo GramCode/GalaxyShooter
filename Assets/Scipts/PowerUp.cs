@@ -82,6 +82,13 @@ public class PowerUp : MonoBehaviour
                         break;
                     case 1:
                         player.SpeedBoostActive();
+                        _uiManager.UpdateBar(false);
+                        Player script = _player.GetComponent<Player>();
+                        if (script != null)
+                        {
+                            script.LeftShiftReleased();
+                            script.CanSpeedUp(true);
+                        }
                         break;
                     case 2:
                         player.ResetShieldLives();

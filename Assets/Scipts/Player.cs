@@ -39,6 +39,7 @@ public class Player : MonoBehaviour
     private bool _canSpeedUp = true;
     private bool _isProjectileActive = false;
     private bool _canShootProjectile = false;
+    private bool _leftShiftPressed = false;
 
     private int _score;
     private int _shieldLives = 3;
@@ -95,6 +96,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        SpeedRate();
         CalculateMovement();
         if (_isProjectileActive)
         {
@@ -102,7 +104,6 @@ public class Player : MonoBehaviour
         }
         ShootLaser();
         PlayerBounds();
-        SpeedRate();
         CanShootProjectile();
         
     }
@@ -114,20 +115,35 @@ public class Player : MonoBehaviour
 
         Vector3 distance = new Vector3(horizontalInput, verticalInput, 0);
 
-        if (_isSpeedBoostActive)
+        if (_canSpeedUp)
         {
-            transform.Translate(distance * (_speed * _speedMultiplier) * Time.deltaTime, 0);
-            _thruster.SetActive(true);
+            if (_isSpeedBoostActive)
+            {
+                transform.Translate(distance * (_speed * _speedMultiplier) * Time.deltaTime, 0);
+                _thruster.SetActive(true);
+                return;
+            }
+
+            if (_isNegativeSpeedActive)
+            {
+                transform.Translate(distance * (_speed / _speedMultiplier) * Time.deltaTime, 0);
+                return;
+            }
+
+            if (_leftShiftPressed)
+            {
+                transform.Translate(distance * (_speed * _speedMultiplier) * Time.deltaTime, 0);
+                _thruster.SetActive(true);
+                return;
+            }
+           
         }
-        else if (_isNegativeSpeedActive)
-        {
-            transform.Translate(distance * (_speed / _speedMultiplier) * Time.deltaTime, 0);
-        }
-        else
-        {
-            transform.Translate(distance * _speed * Time.deltaTime, 0);
-            _thruster.SetActive(false);
-        }
+        
+     
+
+        transform.Translate(distance * _speed * Time.deltaTime, 0);
+        _thruster.SetActive(false);
+        
     }
 
     private void ShootLaser()
@@ -232,18 +248,26 @@ public class Player : MonoBehaviour
 
     private void SpeedRate()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift) && _isNegativeSpeedActive == false)
+        if (_isSpeedBoostActive == false && _isNegativeSpeedActive == false)
         {
-            _uiManager.UpdateBar(true);
-            _isSpeedBoostActive = true;
-            
-        }
+            if (Input.GetKeyUp(KeyCode.LeftShift))
+            {
+                _leftShiftPressed = false;
+                _uiManager.UpdateBar(false);
+            }
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                _leftShiftPressed = true;
+                _uiManager.UpdateBar(true);              
+            }
 
-        else if (Input.GetKeyUp(KeyCode.LeftShift) && _isNegativeSpeedActive == false)
-        {
-            _isSpeedBoostActive = false;
-            _uiManager.UpdateBar(false);
         }
+                
+    }
+
+    public void LeftShiftReleased()
+    {
+        _leftShiftPressed = false;
     }
 
     private bool CanShootProjectile()
@@ -530,22 +554,13 @@ public class Player : MonoBehaviour
     {
         _isSpreadShotActive = false;
     }
-
+    
     public void CanSpeedUp(bool canSpeed)
     {
         if (!_isNegativeSpeedActive)
             _canSpeedUp = canSpeed;
-
-        if (!_canSpeedUp)
-        {
-            _isSpeedBoostActive = false;
-        }
-        else
-        {
-            _isSpeedBoostActive = true;
-        }
     }
-
+    
     public void NegativeSpeedActive()
     {
         _isSpeedBoostActive = false;

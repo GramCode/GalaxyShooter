@@ -201,7 +201,6 @@ public class UIManager : MonoBehaviour
     {
         _shouldEmptyBar = false;
         _shouldStopFillingUpBar = false;
-        _player.CanSpeedUp(false);
 
         if (!_isFillingUpBar)
             StartCoroutine(FillUpBarRoutine());
@@ -218,6 +217,7 @@ public class UIManager : MonoBehaviour
 
             if (_barImage.fillAmount == 0)
             {
+                _player.CanSpeedUp(false);
                 StartFillingUpBar();
             }
 
@@ -241,6 +241,7 @@ public class UIManager : MonoBehaviour
             if (_barImage.fillAmount == 1)
             {
                 _shouldStopFillingUpBar = true;
+                _player.CanSpeedUp(true);
             }
         }
         _isFillingUpBar = false;

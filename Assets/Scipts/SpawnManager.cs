@@ -5,11 +5,11 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     [SerializeField]
-    private GameObject[] _enemiesPrefab; //Default, Blaster, Follower, Shoot Backward
+    private GameObject[] _enemiesPrefab; //0 = Default, 1 = Laser Beam, 2 = Fire Twice, 3 = Shoot Backward, 4 = Avoid Shot
     [SerializeField]
     private GameObject _enemyContainer;
     [SerializeField]
-    private GameObject[] _powerups;
+    private GameObject[] _powerups; //0 = Triple Shot, 1 = Speed Positive, 2 = Shield, 3 = Speed Negative, 4 = Life, 5 = Ammo Refill, 6 = Spreead Shot, 7 = Projectile
     
     private Vector3 _posToSpawnEnemy;
     private Vector3 _posToSpawnPowerup;
@@ -184,7 +184,7 @@ public class SpawnManager : MonoBehaviour
 
         while (_stopSpawningPowerup == false)
         {
-            _spawnedPowerup = Instantiate(_powerups[GetPowerupIndex()], _posToSpawnPowerup, Quaternion.identity);
+            _spawnedPowerup = Instantiate(_powerups[1], _posToSpawnPowerup, Quaternion.identity);
             yield return new WaitForSeconds(Random.Range(3, 8));
         }
         
