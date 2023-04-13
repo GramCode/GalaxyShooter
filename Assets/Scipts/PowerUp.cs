@@ -5,7 +5,7 @@ using UnityEngine;
 public class PowerUp : MonoBehaviour
 {
     [SerializeField] private float _speed = 3.0f;
-    [SerializeField] private int _powerupID; //0 = Triple Shot, 1 = Speed, 2 = Shields, 3 = Bullets, 4 = life, 5 = negative speed, 6 = spread shot, 7 = projectile
+    [SerializeField] private int _powerupID; //0 = Triple Shot, 1 = Speed Positive, 2 = Shield, 3 = Ammo Refill, 4 = life, 5 = Spread Shot, 6 = Negative Speed, 7 = projectile
     [SerializeField] private AudioClip _clip;
 
     private UIManager _uiManager;
@@ -53,7 +53,7 @@ public class PowerUp : MonoBehaviour
             _moveTowardsPlayer = true;
         }
 
-        if (_moveTowardsPlayer == true)
+        if (_moveTowardsPlayer == true && _player.GetComponent<Player>().PlayerLives() > 0)
         {
             Vector3 playerPosition = _player.transform.position;
             transform.position = Vector3.MoveTowards(transform.position, playerPosition, (_speed * 2) * Time.deltaTime);
@@ -83,12 +83,9 @@ public class PowerUp : MonoBehaviour
                     case 1:
                         player.SpeedBoostActive();
                         _uiManager.UpdateBar(false);
-                        Player script = _player.GetComponent<Player>();
-                        if (script != null)
-                        {
-                            script.LeftShiftReleased();
-                            script.CanSpeedUp(true);
-                        }
+                        player.LeftShiftReleased();
+                        player.CanSpeedUp(true);
+                        
                         break;
                     case 2:
                         player.ResetShieldLives();

@@ -10,9 +10,8 @@ public class LaserBeamEnemy : MonoBehaviour
     [SerializeField] private GameObject _blast;
     
     private Collider2D _collider2D;
-    private float _fireRate = 3.0f;
-    private float _canShoot = -1;
     private bool _hasMovedHorizontally = false;
+    private bool _hasShootLaserBeam = false;
     private Vector3[] vectors = new Vector3[2];
     private Vector3 randomVector;
     private Vector2 randomVector2;
@@ -20,6 +19,7 @@ public class LaserBeamEnemy : MonoBehaviour
     private SpawnManager _spawnManger;
     private GameManager _gameManager;
     private bool _isDestroyed = false;
+    private bool _projectileHasBeenDestroyed;
 
     private void Start()
     {
@@ -61,7 +61,15 @@ public class LaserBeamEnemy : MonoBehaviour
             EnemyBehavior();
             EnemyBounds();
         }
-        
+
+        if (_isDestroyed && _projectileHasBeenDestroyed == false && _player.projectile != null)
+        {
+            Projectile projectileScript = _player.projectile.GetComponent<Projectile>();
+            _projectileHasBeenDestroyed = true;
+            projectileScript.DestroyTarget();
+            projectileScript.DestroyProjectile();
+        }
+
     }
 
     void EnemyBehavior()
@@ -96,6 +104,7 @@ public class LaserBeamEnemy : MonoBehaviour
             float randomX = Random.Range(-8, 8);
             transform.position = new Vector3(randomX, 7.5f, 0);
             _hasMovedHorizontally = false;
+            _hasShootLaserBeam = false;
             randomVector = vectors[Random.Range(0, 2)];
             randomVector2 = new Vector2(Random.Range(-8, 8), 3.5f);
         }
@@ -111,13 +120,11 @@ public class LaserBeamEnemy : MonoBehaviour
 
     private void ShootLaserBeam()
     {
-        if (Time.time > _canShoot)
+        if (!_hasShootLaserBeam)
         {
-            _fireRate = Random.Range(3f, 7f);
-            _canShoot = Time.time + _fireRate;
-
             GameObject blast = Instantiate(_blast, transform.position + new Vector3(0.06f, -0.3f, 0), Quaternion.identity);
             StartCoroutine(ScaleBlastRoutine(blast));
+            _hasShootLaserBeam = true;
         }
         
     }
@@ -129,7 +136,7 @@ public class LaserBeamEnemy : MonoBehaviour
         while (value < 0.91 && exitWhileLoop == false && Time.timeScale != 0)
         {
 
-            value += 0.005f;
+            value += 0.01f;
             blast.transform.localScale = new Vector3(value, value, value);
             if (_isDestroyed)
             {
@@ -148,13 +155,13 @@ public class LaserBeamEnemy : MonoBehaviour
 
     private void EnemyBounds()
     {
-        if (transform.position.x > 11.3f)
+        if (transform.position.x > 10.1f)
         {
-            transform.position = new Vector3(-11.3f, transform.position.y);
+            transform.position = new Vector3(-10.1f, transform.position.y);
         }
-        else if (transform.position.x < -11.3f)
+        else if (transform.position.x < -10.1f)
         {
-            transform.position = new Vector3(11.3f, transform.position.y, 0);
+            transform.position = new Vector3(10.1f, transform.position.y, 0);
         }
     }
 
@@ -195,7 +202,6 @@ public class LaserBeamEnemy : MonoBehaviour
             if (_player != null)
             {
                 _player.AddScore(10);
-                _player.projectileHasBeenShot = false;
                 _player.DontShootProjectile();
             }
 
@@ -207,20 +213,14 @@ public class LaserBeamEnemy : MonoBehaviour
             _spawnManger.enemies.Remove(this.gameObject);
             _player.HideTargetRange();
 
-            if (this.gameObject.transform.GetChild(0).gameObject != null)
+            Projectile projectile = other.gameObject.GetComponent<Projectile>();
+
+            if (projectile != null)
             {
-                Destroy(this.gameObject.transform.GetChild(0).gameObject);
+                projectile.DestroyProjectile();
+                projectile.DestroyTarget();
             }
-            else
-            {
-                foreach (var enemy in _spawnManger.enemies)
-                {
-                    if (enemy.transform.GetChild(0).gameObject != null)
-                    {
-                        Destroy(enemy.transform.GetChild(0).gameObject);
-                    }
-                }
-            }
+
             Destroy(_collider2D);
             Destroy(this.gameObject, 0.2f);
             Destroy(other.gameObject);
@@ -235,11 +235,6 @@ public class LaserBeamEnemy : MonoBehaviour
             {
                 _spawnManger.CompletedWave();
                 Enemy.EnemiesEliminated = 0;
-
-                if (SpawnManager.WavesCount == _spawnManger.CurrentWave)
-                {
-                    _gameManager.CompletedGame();
-                }
             }
         }
     }

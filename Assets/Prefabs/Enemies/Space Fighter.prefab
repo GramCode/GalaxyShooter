@@ -229,6 +229,7 @@ MonoBehaviour:
   _speed: 3.5
   _explosion: {fileID: 93922394887139743, guid: e482fff6f90024fad8d2f2ab7a7e381a, type: 3}
   _laserPrefab: {fileID: 3573251956970020480, guid: 85cd1ceaa7e2f4b94b1ea7f1afd3d6ae, type: 3}
+  _boss: {fileID: 2896737272415584878, guid: f515202f5a73c4c2db003acf12ea5ac1, type: 3}
 --- !u!68 &3811543084348325901
 EdgeCollider2D:
   m_ObjectHideFlags: 0

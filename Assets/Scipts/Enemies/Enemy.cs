@@ -20,9 +20,9 @@ public class Enemy : MonoBehaviour
     private float _canShootToPowerup = -1;
     private bool _isDestroyed = false;
     private bool _canShootPowerup = false;
+    private bool _projectileHasBeenDestroyed;
     private SpawnManager _spawnManger;
     private GameManager _gameManager;
-    private UIManager _uiManager;
 
     public static int EnemiesEliminated { get; set; }
 
@@ -66,11 +66,8 @@ public class Enemy : MonoBehaviour
 
     }
 
-
-
     void Update()
     {
-
         EnemyBehavior();
 
         if (!_isDestroyed)
@@ -78,7 +75,15 @@ public class Enemy : MonoBehaviour
             FireLaser();
             FollowPlayer();
         }
+        if (_isDestroyed && _projectileHasBeenDestroyed == false && _player.projectile != null)
+        {
+            Projectile projectileScript = _player.projectile.GetComponent<Projectile>();
+            _projectileHasBeenDestroyed = true;
+            projectileScript.DestroyTarget();
+            projectileScript.DestroyProjectile();
+        }
         
+
     }
 
     void EnemyBehavior()
@@ -144,7 +149,6 @@ public class Enemy : MonoBehaviour
             EnemiesEliminated++;
             CheckForNextWave();
             _spawnManger.enemies.Remove(this.gameObject);
-            //Destroy(Projectile.instantiatedTarget);
             _audioSource.Play();
             Destroy(_collider2D);
             Destroy(this.gameObject, 2.8f);
@@ -175,7 +179,6 @@ public class Enemy : MonoBehaviour
             if (_player != null)
             {
                 _player.AddScore(10);
-                _player.projectileHasBeenShot = false;
                 _player.DontShootProjectile();
             }
             
@@ -188,21 +191,14 @@ public class Enemy : MonoBehaviour
             _player.HideTargetRange();
             _audioSource.Play();
 
-            if (this.gameObject.transform.GetChild(0).gameObject != null)
+            Projectile projectile = other.gameObject.GetComponent<Projectile>();
+
+            if (projectile != null)
             {
-                Destroy(this.gameObject.transform.GetChild(0).gameObject);
+                projectile.DestroyProjectile();
+                projectile.DestroyTarget();
             }
-            else
-            {
-                foreach (var enemy in _spawnManger.enemies)
-                {
-                    if (enemy.transform.GetChild(0).gameObject != null)
-                    {
-                        Destroy(enemy.transform.GetChild(0).gameObject);
-                    }
-                }
-            }
-            
+
             Destroy(_collider2D);
             Destroy(this.gameObject, 2.8f);
             Destroy(other.gameObject);
@@ -218,11 +214,6 @@ public class Enemy : MonoBehaviour
             {
                 _spawnManger.CompletedWave();
                 EnemiesEliminated = 0;
-
-                if (SpawnManager.WavesCount == _spawnManger.CurrentWave)
-                {
-                    _gameManager.CompletedGame();
-                }
             }
         }
     }
@@ -239,7 +230,7 @@ public class Enemy : MonoBehaviour
     
     public void ShootPowerUp()
     {
-        if (_canShootPowerup && Time.time > _canShootToPowerup && _canShootPowerup)
+        if (_canShootPowerup && Time.time > _canShootToPowerup && !_isDestroyed)
         {
             _canShootToPowerup = Time.time + _fireToPowerupRate;
             float positionToInstantiateY = transform.position.y - 1.12f;

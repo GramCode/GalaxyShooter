@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour
     {
         if (IsGameOver || GameCompleted)
         {
+            _uiManager.HideBossLives();
             _uiManager.UpdateThrusterBarColor(false);
             _uiManager.StopDisplayingNoAmmoText();
             _spawnManager.StopSpawning();

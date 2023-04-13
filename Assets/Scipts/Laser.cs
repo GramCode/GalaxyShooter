@@ -86,7 +86,6 @@ public class Laser : MonoBehaviour
         _isEnemyShootingBackward = true;
     }
 
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Player" && _isEnemyLaser == true)

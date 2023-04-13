@@ -8,17 +8,23 @@ public class Projectile : MonoBehaviour
     private float _speed = 2;
     [SerializeField]
     private GameObject _target;
+    [SerializeField]
+    private GameObject _projectileExplosion;
 
     private Player _playerScript;
     private SpawnManager _spawnManager;
     private Rigidbody2D _rigi;
     private GameObject _instantiatedTarget = null;
     private GameObject _lockedTarget;
-    
+    private bool _isTargetDestroyed;
 
     void Start()
     {
         _playerScript = GameObject.Find("Player").GetComponent<Player>();
+        if (_playerScript == null)
+        {
+            Debug.LogError("The Player in Projectile is NULL");
+        }
 
         _spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
         if (_spawnManager == null)
@@ -31,9 +37,10 @@ public class Projectile : MonoBehaviour
         {
             Debug.Log("No Rigidbody on the Projectile");
         }
-
+        transform.rotation = new Quaternion(0, 0, -90, 1);
         SetTarget();
         StartCoroutine(IncreaseSpeedRoutine());
+        StartCoroutine(DestroyProjectileRoutine());
     }
 
     IEnumerator IncreaseSpeedRoutine()
@@ -48,8 +55,21 @@ public class Projectile : MonoBehaviour
 
     void Update()
     {
-        MoveTowardsEnemy();
-        LookAtTarget();
+        if (_isTargetDestroyed)
+        {
+            transform.Translate(Vector2.up * _speed * Time.deltaTime);
+            Destroy(_instantiatedTarget);
+        }
+        if (_lockedTarget != null)
+        {
+            MoveTowardsEnemy();
+            LookAtTarget();
+        }
+        else
+        {
+            transform.Translate(Vector2.up * _speed * Time.deltaTime);
+        }
+        
     }
 
     private void MoveTowardsEnemy()
@@ -64,22 +84,54 @@ public class Projectile : MonoBehaviour
         _rigi.rotation = angle;
     }
 
-    public void SetTarget()
+    private IEnumerator DestroyProjectileRoutine()
     {
-        _lockedTarget = _playerScript.GetTarget();
-        _instantiatedTarget = Instantiate(_target, _lockedTarget.transform.position, Quaternion.identity);
-        _instantiatedTarget.transform.parent = _lockedTarget.transform;
+        yield return new WaitForSeconds(2.3f);
+        DestroyTarget();
+        DestroyProjectile();
     }
 
-    public void HideTarget()
+    private void SetTarget()
     {
-        _instantiatedTarget.SetActive(false);
+        if (_spawnManager.BossHasSpawned)
+        {
+            _lockedTarget = _spawnManager.InstantiatedBoss;
+            _instantiatedTarget = Instantiate(_target, _lockedTarget.transform.position, Quaternion.identity);
+            _instantiatedTarget.transform.parent = _lockedTarget.transform;
+        }
+        else
+        {
+            if (_playerScript.GetTarget() == null)
+            {
+                Debug.Log("target is null");
+                DestroyProjectile();
+                DestroyTarget();
+            }
+            else
+            {
+                _lockedTarget = _playerScript.GetTarget();
+                _instantiatedTarget = Instantiate(_target, _lockedTarget.transform.position, Quaternion.identity);
+                _instantiatedTarget.transform.parent = _lockedTarget.transform;
+            }
+            
+        }
+       
     }
 
-    public Transform GetPosition()
+    public void DestroyProjectile()
     {
-        return transform;
+        Destroy(gameObject.GetComponent<Collider2D>());
+        Destroy(this.gameObject, 0.4f);
+        Instantiate(_projectileExplosion, transform.position, Quaternion.identity);
     }
 
+    public void EnemyTargetDestroyed()
+    {
+        _isTargetDestroyed = true;
+    }
 
+    public void DestroyTarget()
+    {
+        Destroy(_instantiatedTarget);
+    }
 }

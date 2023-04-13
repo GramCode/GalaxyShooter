@@ -192,6 +192,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 3.5
   _laserPrefab: {fileID: 3573251956970020480, guid: 85cd1ceaa7e2f4b94b1ea7f1afd3d6ae, type: 3}
-  _laserAudioClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
   _laserBeamPrefab: {fileID: 5114063870685403337, guid: 943ed2e2b611d4bb18316c5d19561230, type: 3}
   _explosion: {fileID: 93922394887139743, guid: e482fff6f90024fad8d2f2ab7a7e381a, type: 3}
+  _boss: {fileID: 2896737272415584878, guid: f515202f5a73c4c2db003acf12ea5ac1, type: 3}

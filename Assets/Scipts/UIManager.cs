@@ -14,15 +14,19 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text _ammoText;
     [SerializeField] private TMP_Text _noAmmoText;
     [SerializeField] private TMP_Text _wavesText;
+    [SerializeField] private TMP_Text _wavesCountText;
     [SerializeField] private Image _barImage;
     [SerializeField] private List<GameObject> _laserImageUI;
     [SerializeField] private GameObject _pauseMenu;
     [SerializeField] private GameObject _projectileBackground;
-    [SerializeField] private GameObject _dontSign;
+    [SerializeField] private GameObject _prohibitionSign;
+    [SerializeField] private Sprite[] _bossLivesSprites;
+    [SerializeField] private Image _bossLivesImage;
 
     private GameManager _gameManager;
     private Player _player;
     private Asteroid _asteroid;
+    private Animator _wavesCountTextAnim;
 
     private bool _isNoAmmoTextActive = false;
     private bool _routineRunning = false;
@@ -30,7 +34,7 @@ public class UIManager : MonoBehaviour
     private bool _shouldStopFillingUpBar = false;
     private bool _isFillingUpBar = false;
     private bool _isWavesTextShowing = false;
-
+    private Vector3 _wavesTextStartingPosition;
     private Color _thrusterBarColor;
 
     void Start()
@@ -61,8 +65,15 @@ public class UIManager : MonoBehaviour
             Debug.LogError("Asteroid in UIManager is NULL");
         }
 
+        _wavesCountTextAnim = _wavesCountText.gameObject.GetComponent<Animator>();
+        if (_wavesCountTextAnim == null)
+        {
+            Debug.LogError("The Animator for Waves Count in UI Manager is NULL");
+        }
+
         _ammoText.color = Color.green;
         _thrusterBarColor = _barImage.color;
+        _wavesTextStartingPosition = _wavesCountText.transform.position;
 
     }
 
@@ -236,7 +247,7 @@ public class UIManager : MonoBehaviour
         while (!_shouldStopFillingUpBar)
         {
             yield return new WaitForEndOfFrame();
-            _barImage.fillAmount += 0.001f;
+            _barImage.fillAmount += 0.004f;
 
             if (_barImage.fillAmount == 1)
             {
@@ -251,6 +262,7 @@ public class UIManager : MonoBehaviour
     {
         _wavesText.text = "Wave " + wave;
         _wavesText.gameObject.SetActive(true);
+        _wavesCountText.gameObject.SetActive(true);
         _isWavesTextShowing = true;
         StartCoroutine(WavesFlickerRoutine(wave));
         StartCoroutine(HideWavesTextRoutine());
@@ -258,12 +270,22 @@ public class UIManager : MonoBehaviour
 
     IEnumerator WavesFlickerRoutine(int wave)
     {
+        int times = 0;
         while (_isWavesTextShowing)
         {
-            _wavesText.text = "Wave " + wave;
+            times++;
+            _wavesText.text = "Wave ";
+            _wavesCountText.text = wave.ToString();
             yield return new WaitForSeconds(0.5f);
             _wavesText.text = "";
-            yield return new WaitForSeconds(0.5f);
+            _wavesCountText.text = "";
+           yield return new WaitForSeconds(0.5f);
+
+            if (times > 2)
+            {
+                _wavesCountText.text = wave.ToString();
+                _wavesCountTextAnim.SetTrigger("Move");
+            }
         }
     }
 
@@ -334,13 +356,43 @@ public class UIManager : MonoBehaviour
         _projectileBackground.SetActive(false);
     }
 
-    public void DisplayDontSign()
+    public void DisplayProhibitionSign()
     {
-        _dontSign.SetActive(true);
+        _prohibitionSign.SetActive(true);
     }
 
-    public void HideDontSign()
+    public void HideProhibitionSign()
     {
-        _dontSign.SetActive(false);
+        _prohibitionSign.SetActive(false);
+    }
+
+    public void UpdateBossLives(int currentLives)
+    {
+        _bossLivesImage.sprite = _bossLivesSprites[currentLives];
+    }
+
+    public void DisplayBossLives()
+    {
+        _bossLivesImage.gameObject.SetActive(true);
+    }
+
+    public void HideBossLives()
+    {
+        _bossLivesImage.gameObject.SetActive(false);
+    }
+
+    public void HideWavesCount()
+    {
+        _wavesCountText.gameObject.SetActive(false);
+    }
+
+    public void ResetWaveCountTextPosition()
+    {
+        _wavesCountText.transform.position = _wavesTextStartingPosition;
+    }
+
+    public void DisplayWavesCount()
+    {
+        _wavesCountText.gameObject.SetActive(true);
     }
 }

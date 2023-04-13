@@ -10,7 +10,9 @@ public class SpawnManager : MonoBehaviour
     private GameObject _enemyContainer;
     [SerializeField]
     private GameObject[] _powerups; //0 = Triple Shot, 1 = Speed Positive, 2 = Shield, 3 = Speed Negative, 4 = Life, 5 = Ammo Refill, 6 = Spreead Shot, 7 = Projectile
-    
+    [SerializeField]
+    private GameObject _boss;
+
     private Vector3 _posToSpawnEnemy;
     private Vector3 _posToSpawnPowerup;
     private bool _stopSpawningEnemy = false;
@@ -19,9 +21,10 @@ public class SpawnManager : MonoBehaviour
     private GameManager _gameManager;
     private GameObject _enemy;
     private GameObject _spawnedPowerup;
+    public GameObject InstantiatedBoss { get; private set; }
+
     [HideInInspector]
     public GameObject EnemySpawned;
-
     [HideInInspector]
     public List<int> wavesEnemies = new List<int>();
     [HideInInspector]
@@ -31,6 +34,7 @@ public class SpawnManager : MonoBehaviour
     public int CurrentWave { get; private set; }
     public int EnemiesSpawned { get; private set; }
     public static int EnemyID { get; private set; }
+    public bool BossHasSpawned { get; private set; }
 
     enum EnemyType
     {
@@ -68,6 +72,7 @@ public class SpawnManager : MonoBehaviour
         }
 
         CurrentWave = 0;
+        BossHasSpawned = false;
 
         _enemiesType[0] = EnemyType.Default;
         _enemiesType[1] = EnemyType.LaserBeam;
@@ -184,7 +189,7 @@ public class SpawnManager : MonoBehaviour
 
         while (_stopSpawningPowerup == false)
         {
-            _spawnedPowerup = Instantiate(_powerups[1], _posToSpawnPowerup, Quaternion.identity);
+            _spawnedPowerup = Instantiate(_powerups[GetPowerupIndex()], _posToSpawnPowerup, Quaternion.identity);
             yield return new WaitForSeconds(Random.Range(3, 8));
         }
         
@@ -235,6 +240,10 @@ public class SpawnManager : MonoBehaviour
         EnemiesSpawned = 0;
         CurrentWave++;
 
+        _uIManager.HideWavesCount();
+        _uIManager.ResetWaveCountTextPosition();
+        _uIManager.DisplayWavesCount();
+
         if (_gameManager.IsGameOver)
         {
             EnemiesSpawned = 0;
@@ -243,9 +252,11 @@ public class SpawnManager : MonoBehaviour
         {
             if (CurrentWave >= WavesCount)
             {
-                _uIManager.AllWavesCompleted();
+                InstantiatedBoss = Instantiate(_boss, new Vector3(0, 13, 0), Quaternion.identity);
+                _uIManager.DisplayBossLives();
                 _stopSpawningEnemy = true;
-                _stopSpawningPowerup = true;
+                BossHasSpawned = true;
+                GameObject.Find("Player").GetComponent<Player>().ShootProjectile();
             }
             else
             {
@@ -262,6 +273,8 @@ public class SpawnManager : MonoBehaviour
         _stopSpawningEnemy = false;
         StartCoroutine(SpawnEnemyRoutine());
     }
+
+    
 
     public void StopSpawning()
     {

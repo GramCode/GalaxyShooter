@@ -20,6 +20,7 @@ public class EnemyShootBackwards : MonoBehaviour
     private bool _hasShootBackward = false;
     private bool _isDestroyed = false;
     private bool _canShootPowerup = false;
+    private bool _projectileHasBeenDestroyed = false;
     private SpawnManager _spawnManger;
     private GameManager _gameManager;
 
@@ -57,11 +58,8 @@ public class EnemyShootBackwards : MonoBehaviour
 
     }
 
-
-
     void Update()
     {
-
         EnemyBehavior();
 
         if (!_isDestroyed)
@@ -70,7 +68,13 @@ public class EnemyShootBackwards : MonoBehaviour
             ShootBackward();
         }
 
-        
+        if (_isDestroyed && _projectileHasBeenDestroyed == false && _player.projectile != null)
+        {
+            Projectile projectileScript = _player.projectile.GetComponent<Projectile>();
+            _projectileHasBeenDestroyed = true;
+            projectileScript.DestroyTarget();
+            projectileScript.DestroyProjectile();
+        }
     }
 
     void EnemyBehavior()
@@ -163,7 +167,6 @@ public class EnemyShootBackwards : MonoBehaviour
             if (_player != null)
             {
                 _player.AddScore(10);
-                _player.projectileHasBeenShot = false;
                 _player.DontShootProjectile();
             }
 
@@ -176,20 +179,15 @@ public class EnemyShootBackwards : MonoBehaviour
             _spawnManger.enemies.Remove(this.gameObject);
             _player.HideTargetRange();
 
-            if (this.gameObject.transform.GetChild(0).gameObject != null)
+
+            Projectile projectile = other.gameObject.GetComponent<Projectile>();
+
+            if (projectile != null)
             {
-                Destroy(this.gameObject.transform.GetChild(0).gameObject);
+                projectile.DestroyProjectile();
+                projectile.DestroyTarget();
             }
-            else
-            {
-                foreach (var enemy in _spawnManger.enemies)
-                {
-                    if (enemy.transform.GetChild(0).gameObject != null)
-                    {
-                        Destroy(enemy.transform.GetChild(0).gameObject);
-                    }
-                }
-            }
+
             Destroy(_collider2D);
             Destroy(this.gameObject, 2.8f);
             Destroy(other.gameObject);
@@ -205,11 +203,6 @@ public class EnemyShootBackwards : MonoBehaviour
             {
                 _spawnManger.CompletedWave();
                 Enemy.EnemiesEliminated = 0;
-
-                if (SpawnManager.WavesCount == _spawnManger.CurrentWave)
-                {
-                    _gameManager.CompletedGame();
-                }
             }
         }
     }

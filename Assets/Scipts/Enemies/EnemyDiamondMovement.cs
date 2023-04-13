@@ -25,6 +25,7 @@ public class EnemyDiamondMovement : MonoBehaviour
     private float _canShoot = -1;
     private bool _isShieldActive = true;
     private bool _isDestroyed = false;
+    private bool _projectileHasBeenDestroyed = false;
 
     void Start()
     {
@@ -82,8 +83,14 @@ public class EnemyDiamondMovement : MonoBehaviour
             EnemyBehavior();
             FireLaser();
         }
-        
-                
+
+        if (_isDestroyed && _projectileHasBeenDestroyed == false && _player.projectile != null)
+        {
+            Projectile projectileScript = _player.projectile.GetComponent<Projectile>();
+            _projectileHasBeenDestroyed = true;
+            projectileScript.DestroyTarget();
+            projectileScript.DestroyProjectile();
+        }
     }
 
     void EnemyBehavior()
@@ -110,7 +117,6 @@ public class EnemyDiamondMovement : MonoBehaviour
                 }
                
             }
-
         }
 
 
@@ -285,9 +291,19 @@ public class EnemyDiamondMovement : MonoBehaviour
 
         if (other.CompareTag("Projectile"))
         {
+            Projectile projectile = other.gameObject.GetComponent<Projectile>();
             if (_isShieldActive)
             {
                 HideShield();
+                _player.HideTargetRange();
+                _player.DontShootProjectile();
+                
+                if (projectile != null)
+                {
+                    projectile.DestroyProjectile();
+                    projectile.DestroyTarget();
+                }
+
                 Destroy(other.gameObject);
                 return;
             }
@@ -295,8 +311,13 @@ public class EnemyDiamondMovement : MonoBehaviour
             if (_player != null)
             {
                 _player.AddScore(10);
-                _player.projectileHasBeenShot = false;
                 _player.DontShootProjectile();
+            }
+
+            if (projectile != null)
+            {
+                projectile.DestroyProjectile();
+                projectile.DestroyTarget();
             }
 
             _speed = 0;
@@ -307,20 +328,6 @@ public class EnemyDiamondMovement : MonoBehaviour
             _spawnManger.enemies.Remove(this.gameObject);
             _player.HideTargetRange();
 
-            if (this.gameObject.transform.GetChild(0).gameObject != null)
-            {
-                Destroy(this.gameObject.transform.GetChild(0).gameObject);
-            }
-            else
-            {
-                foreach (var enemy in _spawnManger.enemies)
-                {
-                    if (enemy.transform.GetChild(0).gameObject != null)
-                    {
-                        Destroy(enemy.transform.GetChild(0).gameObject);
-                    }
-                }
-            }
             Destroy(_collider2D);
             Destroy(this.gameObject, 0.2f);
             Destroy(other.gameObject);
@@ -335,11 +342,6 @@ public class EnemyDiamondMovement : MonoBehaviour
             {
                 _spawnManger.CompletedWave();
                 Enemy.EnemiesEliminated = 0;
-
-                if (SpawnManager.WavesCount == _spawnManger.CurrentWave)
-                {
-                    _gameManager.CompletedGame();
-                }
             }
         }
     }

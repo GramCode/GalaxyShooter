@@ -208,6 +208,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 2
   _target: {fileID: 7449620589068670446, guid: 5987202d7369f4fc88d69d75877bed6c, type: 3}
+  _projectileExplosion: {fileID: 8605463439972377175, guid: 3b98fda7c41e04991bdae4063d1449a7, type: 3}
 --- !u!70 &845028085736989854
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

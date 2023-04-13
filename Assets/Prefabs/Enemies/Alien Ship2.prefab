@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3478827073469464744}
   - component: {fileID: 143245096848057789}
   m_Layer: 0
-  m_Name: AlienShip2
+  m_Name: Alien Ship2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -159,5 +159,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 3.5
   _alienTwoLaserPrefab: {fileID: 871072954497481307, guid: 588ac2f4cceec4e47b2cc810f936142e, type: 3}
-  _laserAudioClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
   _explosion: {fileID: 93922394887139743, guid: e482fff6f90024fad8d2f2ab7a7e381a, type: 3}
+  _boss: {fileID: 2896737272415584878, guid: f515202f5a73c4c2db003acf12ea5ac1, type: 3}

@@ -40,14 +40,16 @@ public class Player : MonoBehaviour
     private bool _isProjectileActive = false;
     private bool _canShootProjectile = false;
     private bool _leftShiftPressed = false;
+    
 
     private int _score;
     private int _shieldLives = 3;
     private int _ammoCount = 15;
     private int _uiLasersCount;
 
-    public bool projectileHasBeenShot = false;
+    private bool _projectileHasBeenShot = false;
 
+    public GameObject projectile { get; private set; }
 
     private void Start()
     {
@@ -92,16 +94,19 @@ public class Player : MonoBehaviour
             Debug.LogError("Asteroid in Player is NULL");
         }
 
+        projectile = null;
     }
 
     private void Update()
     {
         SpeedRate();
         CalculateMovement();
+
         if (_isProjectileActive)
         {
             ClosestEnemy();
         }
+
         ShootLaser();
         PlayerBounds();
         CanShootProjectile();
@@ -124,12 +129,6 @@ public class Player : MonoBehaviour
                 return;
             }
 
-            if (_isNegativeSpeedActive)
-            {
-                transform.Translate(distance * (_speed / _speedMultiplier) * Time.deltaTime, 0);
-                return;
-            }
-
             if (_leftShiftPressed)
             {
                 transform.Translate(distance * (_speed * _speedMultiplier) * Time.deltaTime, 0);
@@ -138,8 +137,14 @@ public class Player : MonoBehaviour
             }
            
         }
-        
-     
+
+
+        if (_isNegativeSpeedActive)
+        {
+            transform.Translate(distance * (_speed / _speedMultiplier) * Time.deltaTime, 0);
+            _thruster.SetActive(false);
+            return;
+        }
 
         transform.Translate(distance * _speed * Time.deltaTime, 0);
         _thruster.SetActive(false);
@@ -171,19 +176,17 @@ public class Player : MonoBehaviour
                     //Fire spread shot (five spread lasers)
                     Instantiate(_spreadShotPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
                 }
-                //else if (_isProjectileActive && _spawnManager.EnemiesSpawned > 0 && Enemy.EnemiesEliminated != _spawnManager.EnemiesSpawned && _closestTarget.transform.position.y >= -2)
                 else if (_isProjectileActive && _canShootProjectile && _closestTarget != null && _closestTarget.transform.position.y > -1)
                 {
-
                     //Fire Projectile
-                    if (projectileHasBeenShot == false)
+                    if (_projectileHasBeenShot == false)
                     {
-                        Instantiate(_projectilePrefab, transform.position + new Vector3(0.01f, 1.2f, 0), Quaternion.identity);
+                        projectile = Instantiate(_projectilePrefab, transform.position + new Vector3(0.01f, 1.2f, 0), Quaternion.identity);
                         _isProjectileActive = false;
                         _uiManager.HideProjectile();
-                        projectileHasBeenShot = true;
+                        _projectileHasBeenShot = true;
+                        StartCoroutine(ProjectileRoutine());
                     }
-                                       
                 }
                 else
                 {
@@ -217,12 +220,19 @@ public class Player : MonoBehaviour
                         }
                     }
                 }
-                if (projectileHasBeenShot == false)
+                if (_projectileHasBeenShot == false)
                 {
+                    //play normal laser sound
                     _audioSource.Play();
                 }
             }
         }
+    }
+
+    private IEnumerator ProjectileRoutine()
+    {
+        yield return new WaitForSeconds(2.0f);
+        _projectileHasBeenShot = false;
     }
 
     private void PlayerBounds()
@@ -270,66 +280,78 @@ public class Player : MonoBehaviour
         _leftShiftPressed = false;
     }
 
-    private bool CanShootProjectile()
+    private void CanShootProjectile()
     {
-        bool canShoot = false;
+
         if (_isProjectileActive)
         {
-            //If there are no enemies on the screen or the enemies are way to close to the bottom of the screen
-            //then there are no targets to shoot at meaning that the player is not able to shoot a projectile 
-            if (_spawnManager.EnemiesSpawned == 0 || Enemy.EnemiesEliminated == _spawnManager.EnemiesSpawned || projectileHasBeenShot == true || _canShootProjectile == false)
+
+            if (_spawnManager.BossHasSpawned)
             {
-                _uiManager.DisplayDontSign();
-                canShoot = false;
-            }
-            else if (_spawnManager.EnemiesSpawned > 0 || Enemy.EnemiesEliminated != _spawnManager.EnemiesSpawned || projectileHasBeenShot == false || _canShootProjectile == true)
-            {
-                _uiManager.HideDontSign();
-                canShoot = true;
+                _uiManager.HideProhibitionSign();
+                _canShootProjectile = true;
+                return;
             }
 
+            if (_spawnManager.EnemiesSpawned == 0 || Enemy.EnemiesEliminated == _spawnManager.EnemiesSpawned || _projectileHasBeenShot == true || _canShootProjectile == false || _ammoCount == 0)
+            {
+
+                _uiManager.DisplayProhibitionSign();
+                _canShootProjectile = false;
+                return;
+            }
+            if (_spawnManager.EnemiesSpawned > 0 || _projectileHasBeenShot == false || _canShootProjectile == true)
+            {
+                _uiManager.HideProhibitionSign();
+                _canShootProjectile = true;
+            }
             if (_closestTarget != null && Enemy.EnemiesEliminated + 1 == _spawnManager.EnemiesSpawned)
             {
+               
                 if (_closestTarget.transform.position.y <= -1.5)
                 {
-                    _uiManager.DisplayDontSign();
-                    canShoot = false;
+                    _uiManager.DisplayProhibitionSign();  
+                    _canShootProjectile = false;
                 }
                 else if (_closestTarget.transform.position.y > -1.5)
                 {
-                    _uiManager.HideDontSign();
-                    canShoot = true;
+                    _uiManager.HideProhibitionSign();
+                    _canShootProjectile = true;
                 }
+                
             }
             else if (_closestTarget != null && Enemy.EnemiesEliminated < _spawnManager.EnemiesSpawned)
             {
+             
                 if (_closestTarget.transform.position.y <= -1)
                 {
-                    _uiManager.DisplayDontSign();
-                    canShoot = false;
+                    _uiManager.DisplayProhibitionSign();
+                    _canShootProjectile = false;
                 }
                 else if (_closestTarget.transform.position.y > -1)
                 {
-                    _uiManager.HideDontSign();
-                    canShoot = true;
+                    _uiManager.HideProhibitionSign();
+                    _canShootProjectile = true;
                 }
-
             }
 
-            if (Enemy.EnemiesEliminated == _spawnManager.EnemiesSpawned || _ammoCount == 0)
-            {
-                _uiManager.DisplayDontSign();
-                canShoot = false;
-            }
         }
-       
 
-        return canShoot;
     }
 
     public void DontShootProjectile()
     {
         _canShootProjectile = false;
+    }
+
+    public void ShootProjectile()
+    {
+        _canShootProjectile = true;
+    }
+
+    public void ProjectileNotShooted()
+    {
+        _projectileHasBeenShot = false;
     }
 
     public void Damage()
@@ -416,33 +438,40 @@ public class Player : MonoBehaviour
 
     private void ClosestEnemy()
     {
-
         float minDistance = Mathf.Infinity;
         Vector3 currentPosition = transform.position;
 
-        if (_spawnManager.enemies.Count != 0)
+        if (_spawnManager.BossHasSpawned)
         {
-            foreach (GameObject enemy in _spawnManager.enemies)
+            _closestTarget = _spawnManager.InstantiatedBoss;
+        }
+        else
+        {
+            if (_spawnManager.enemies.Count != 0)
             {
-                if (enemy != null && enemy.transform.position.y > -2)
+                foreach (GameObject enemy in _spawnManager.enemies)
                 {
-                    _canShootProjectile = true;
-                    float distance = Vector3.Distance(enemy.transform.position, currentPosition);
-                    if (distance < minDistance)
+                    if (enemy != null && enemy.transform.position.y > -2)
                     {
-                        _closestTarget = enemy;
-                        minDistance = distance;
+                        _canShootProjectile = true;
+                        float distance = Vector3.Distance(enemy.transform.position, currentPosition);
+                        if (distance < minDistance)
+                        {
+                            _closestTarget = enemy;
+                            minDistance = distance;
 
+                        }
                     }
-                }
-                else if (enemy != null && enemy.transform.position.y >= -2)
-                {
-                    _canShootProjectile = false;
+                    else if (enemy != null && enemy.transform.position.y >= -2)
+                    {
+                        _canShootProjectile = false;
+                    }
+
                 }
 
             }
-
         }
+        
 
     }
 
@@ -576,7 +605,6 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(4.0f);
         _isNegativeSpeedActive = false;
-        _canSpeedUp = true;
         _uiManager.UpdateThrusterBarColor(false);
     }
 
@@ -600,6 +628,7 @@ public class Player : MonoBehaviour
     public void ProjectileActive()
     {
         _isProjectileActive = true;
+        _canShootProjectile = true;
     }
 
     public void DisplayTargetRange()
@@ -615,4 +644,13 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void ProjectileDestroyed()
+    {
+        _projectileHasBeenShot = false;
+    }
+
+    public int PlayerLives()
+    {
+        return _lives;
+    }
 }

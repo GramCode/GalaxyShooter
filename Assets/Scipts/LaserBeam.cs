@@ -31,6 +31,10 @@ public class LaserBeam : MonoBehaviour
     void Update()
     {
         ShootLaserBeam();
+        if (transform.position.y < -10.9f)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     private void ShootLaserBeam()
@@ -57,11 +61,7 @@ public class LaserBeam : MonoBehaviour
 
         transform.Translate(Vector3.down * _speed * Time.deltaTime);
 
-        if (transform.position.y < -705.0f)
-        {
-
-            Destroy(this.gameObject);
-        }
+      
 
         if (!_audioSource.isPlaying && !_havePlayedAudio)
         {
@@ -81,6 +81,11 @@ public class LaserBeam : MonoBehaviour
                 player.Damage();
                 Destroy(_collider);
             }
+        }
+        
+        if (other.tag == "Powerup")
+        {
+            Destroy(other.gameObject);
         }
     }
 }
