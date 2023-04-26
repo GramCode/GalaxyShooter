@@ -34,7 +34,6 @@ public class Player : MonoBehaviour
     private float _speedMultiplier = 2f;
     private float _fireRate = 0.5f;
     private float _canFire = -1f;
-    private float _elapsedTime;
 
     private bool _isTripleShotActive = false;
     private bool _isSpeedBoostActive = false;
@@ -116,7 +115,15 @@ public class Player : MonoBehaviour
         ShootLaser();
         PlayerBounds();
         CanShootProjectile();
-        
+
+        if (_isSpreadShotActive)
+        {
+            _uiManager.DisplayProhibitionSign();
+        }
+        if (_isTripleShotActive)
+        {
+            _uiManager.DisplayProhibitionSign();
+        }
     }
 
     private void SpeedRate()
@@ -274,7 +281,7 @@ public class Player : MonoBehaviour
                         _uiManager.SetTextColor(Color.white);
                     }
 
-                    if (_ammoCount % 3 == 0) //if ammo count divided by three reminder is equal to zero
+                    if (_ammoCount % 3 == 0) 
                     {
                         _uiManager.HideBullet(_uiLasersCount);
                         _uiLasersCount++;
@@ -378,19 +385,6 @@ public class Player : MonoBehaviour
 
     private void ManageState(float horizontalInput)
     {
-        if (horizontalInput <= -0.2)
-        {
-            _state = State.turningRight;
-        }
-        else if (horizontalInput >= 0.2)
-        {
-            _state = State.turningLeft;
-        }
-        else
-        {
-            _state = State.balanced;
-        }
-
         if (Input.GetKeyDown(KeyCode.RightArrow) == false && Input.GetKeyDown(KeyCode.D) == false)
         {
             if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
@@ -423,28 +417,13 @@ public class Player : MonoBehaviour
         if(horizontalInput == 0)
         {
             Invoke("BackToBalanced", 0.9f);
-            StartCoroutine(IncreaseTimerRoutine(horizontalInput));
-            //Create a timer to see if this time has passed using Time.deltaTime
-            //if the timer is less than the expected time
-            //cancel the invoke
-            
         }
-        _anim.SetInteger("state", (int)_state);
-    }
-
-    IEnumerator IncreaseTimerRoutine(float horizontalInput)
-    {
-        while(_elapsedTime < 0.9f)
+        else
         {
-            yield return new WaitForSeconds(0.1f);
-            _elapsedTime += 0.1f;
-
-            if (horizontalInput != 0)
-            {
-                CancelInvoke();
-            }
+            CancelInvoke();
         }
 
+        _anim.SetInteger("state", (int)_state);
     }
 
     private void BackToBalanced()

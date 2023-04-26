@@ -116,9 +116,9 @@ public class Boss : MonoBehaviour
     IEnumerator ScaleBlastRoutine(GameObject blast)
     {
         float value = 0;
-        while (value < 1.0  && Time.timeScale != 0)
+        while (value < 1.0 && Time.timeScale != 0)
         {
-            value += 0.005f;
+            value += 0.01f;
             blast.transform.localScale = new Vector3(value, value, value);
 
             yield return new WaitForEndOfFrame();

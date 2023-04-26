@@ -418,7 +418,6 @@ public class UIManager : MonoBehaviour
         float elapsedTime = 0;
         while(_countDownFillImage.fillAmount < 1)
         {
-            // _countDownFillImage.fillAmount += 0.002f;
             _countDownFillImage.fillAmount += 1.0f / duration * Time.deltaTime;
              elapsedTime += Time.deltaTime;
             yield return null;
