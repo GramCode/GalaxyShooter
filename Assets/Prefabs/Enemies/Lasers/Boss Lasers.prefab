@@ -72,6 +72,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 8
   _isSpreadShot: 0
+  _audioClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
 --- !u!61 &6998399822669699005
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -105,7 +106,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2231070502662590229}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}

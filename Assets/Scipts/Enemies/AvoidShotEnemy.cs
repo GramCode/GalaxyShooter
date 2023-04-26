@@ -17,7 +17,7 @@ public class AvoidShotEnemy : MonoBehaviour
     private float _canShootToPowerup = -1;
     private bool _isDestroyed = false;
     private bool _canShootPowerup = false;
-    private bool _projectileHasBeenDestroyed = false;
+    private bool _hasShootLaser = false;
     private SpawnManager _spawnManger;
     private GameManager _gameManager;
     private float _dir;
@@ -70,12 +70,11 @@ public class AvoidShotEnemy : MonoBehaviour
             AvoidLaser();
         }
 
-        if (_isDestroyed && _projectileHasBeenDestroyed == false && _player.projectile != null)
+        if (_hasShootLaser)
         {
-            Projectile projectileScript = _player.projectile.GetComponent<Projectile>();
-            _projectileHasBeenDestroyed = true;
-            projectileScript.DestroyTarget();
-            projectileScript.DestroyProjectile();
+            _canShoot = Time.time + _fireRate;
+            _canShootToPowerup = Time.time + _fireToPowerupRate;
+            _hasShootLaser = false;
         }
     }
 
@@ -98,13 +97,14 @@ public class AvoidShotEnemy : MonoBehaviour
         {
             _fireRate = Random.Range(3f, 7f);
             _canShoot = Time.time + _fireRate;
-
+            
             float positionToInstantiateY = transform.position.y - 0.7f;
             float positionToInstantiateX = transform.position.x + 0.065f;
             GameObject enemyLaser = Instantiate(_alienTwoLaserPrefab, new Vector3(positionToInstantiateX, positionToInstantiateY, 0), Quaternion.identity);
             Laser lasers = enemyLaser.GetComponent<Laser>();
             lasers.AssignEnemyLaser();
             _canShootPowerup = false;
+            _hasShootLaser = true;
         }
     }
 
@@ -227,6 +227,7 @@ public class AvoidShotEnemy : MonoBehaviour
             Laser lasers = enemyLaser.GetComponent<Laser>();
             lasers.AssignEnemyLaser();
             _canShootPowerup = false;
+            _hasShootLaser = true;
         }
     }
    

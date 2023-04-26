@@ -19,7 +19,6 @@ public class LaserBeamEnemy : MonoBehaviour
     private SpawnManager _spawnManger;
     private GameManager _gameManager;
     private bool _isDestroyed = false;
-    private bool _projectileHasBeenDestroyed;
 
     private void Start()
     {
@@ -61,15 +60,6 @@ public class LaserBeamEnemy : MonoBehaviour
             EnemyBehavior();
             EnemyBounds();
         }
-
-        if (_isDestroyed && _projectileHasBeenDestroyed == false && _player.projectile != null)
-        {
-            Projectile projectileScript = _player.projectile.GetComponent<Projectile>();
-            _projectileHasBeenDestroyed = true;
-            projectileScript.DestroyTarget();
-            projectileScript.DestroyProjectile();
-        }
-
     }
 
     void EnemyBehavior()
@@ -155,13 +145,13 @@ public class LaserBeamEnemy : MonoBehaviour
 
     private void EnemyBounds()
     {
-        if (transform.position.x > 10.1f)
+        if (transform.position.x > 11.3f)
         {
-            transform.position = new Vector3(-10.1f, transform.position.y);
+            transform.position = new Vector3(-11.3f, transform.position.y);
         }
-        else if (transform.position.x < -10.1f)
+        else if (transform.position.x < -11.3f)
         {
-            transform.position = new Vector3(10.1f, transform.position.y, 0);
+            transform.position = new Vector3(11.3f, transform.position.y, 0);
         }
     }
 

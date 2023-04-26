@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+enum State { turningLeft, backFromLeft, turningRight, backFromRight, balanced }
+
 public class Player : MonoBehaviour
 {
     [SerializeField] private float _speed = 5f;
@@ -18,6 +20,7 @@ public class Player : MonoBehaviour
     [SerializeField] private List<Material> _shieldMaterials;
     [SerializeField] private GameObject _targetRange;
 
+    private Animator _anim;
     private SpawnManager _spawnManager;
     private UIManager _uiManager;
     private CameraBehavior _camera;
@@ -26,10 +29,12 @@ public class Player : MonoBehaviour
     private Asteroid _asterioid;
     private GameObject _laser;
     private GameObject _closestTarget = null;
+    public GameObject projectile { get; private set; }
 
     private float _speedMultiplier = 2f;
     private float _fireRate = 0.5f;
     private float _canFire = -1f;
+    private float _elapsedTime;
 
     private bool _isTripleShotActive = false;
     private bool _isSpeedBoostActive = false;
@@ -49,10 +54,11 @@ public class Player : MonoBehaviour
 
     private bool _projectileHasBeenShot = false;
 
-    public GameObject projectile { get; private set; }
+    private State _state = State.balanced;
 
     private void Start()
     {
+        _anim = GetComponent<Animator>();
         _spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
         _audioSource = GetComponent<AudioSource>();
@@ -113,6 +119,25 @@ public class Player : MonoBehaviour
         
     }
 
+    private void SpeedRate()
+    {
+        if (_isSpeedBoostActive == false && _isNegativeSpeedActive == false)
+        {
+            if (Input.GetKeyUp(KeyCode.LeftShift))
+            {
+                _leftShiftPressed = false;
+                _uiManager.UpdateBar(false);
+            }
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                _leftShiftPressed = true;
+                _uiManager.UpdateBar(true);
+            }
+
+        }
+
+    }
+
     private void CalculateMovement()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
@@ -126,6 +151,7 @@ public class Player : MonoBehaviour
             {
                 transform.Translate(distance * (_speed * _speedMultiplier) * Time.deltaTime, 0);
                 _thruster.SetActive(true);
+                ManageState(distance.x);
                 return;
             }
 
@@ -133,6 +159,7 @@ public class Player : MonoBehaviour
             {
                 transform.Translate(distance * (_speed * _speedMultiplier) * Time.deltaTime, 0);
                 _thruster.SetActive(true);
+                ManageState(distance.x);
                 return;
             }
            
@@ -143,12 +170,51 @@ public class Player : MonoBehaviour
         {
             transform.Translate(distance * (_speed / _speedMultiplier) * Time.deltaTime, 0);
             _thruster.SetActive(false);
+            ManageState(distance.x);
             return;
         }
 
         transform.Translate(distance * _speed * Time.deltaTime, 0);
         _thruster.SetActive(false);
-        
+
+        ManageState(distance.x);
+    }
+
+    private void ClosestEnemy()
+    {
+        float minDistance = Mathf.Infinity;
+        Vector3 currentPosition = transform.position;
+
+        if (_spawnManager.BossHasSpawned)
+        {
+            _closestTarget = _spawnManager.InstantiatedBoss;
+        }
+        else
+        {
+            if (_spawnManager.enemies.Count != 0)
+            {
+                foreach (GameObject enemy in _spawnManager.enemies)
+                {
+                    if (enemy != null && enemy.transform.position.y > -2)
+                    {
+                        _canShootProjectile = true;
+                        float distance = Vector3.Distance(enemy.transform.position, currentPosition);
+                        if (distance < minDistance)
+                        {
+                            _closestTarget = enemy;
+                            minDistance = distance;
+
+                        }
+                    }
+                    else if (enemy != null && enemy.transform.position.y >= -2)
+                    {
+                        _canShootProjectile = false;
+                    }
+
+                }
+
+            }
+        }
     }
 
     private void ShootLaser()
@@ -220,11 +286,6 @@ public class Player : MonoBehaviour
                         }
                     }
                 }
-                if (_projectileHasBeenShot == false)
-                {
-                    //play normal laser sound
-                    _audioSource.Play();
-                }
             }
         }
     }
@@ -246,38 +307,14 @@ public class Player : MonoBehaviour
             transform.position = new Vector3(transform.position.x, -3.8f, 0);
         }
 
-        if (transform.position.x > 10.12f)
+        if (transform.position.x > 11.3f)
         {
-            transform.position = new Vector3(-10.12f, transform.position.y);
+            transform.position = new Vector3(-11.3f, transform.position.y);
         }
-        else if (transform.position.x < -10.12f)
+        else if (transform.position.x < -11.3f)
         {
-            transform.position = new Vector3(10.12f, transform.position.y, 0);
+            transform.position = new Vector3(11.3f, transform.position.y, 0);
         }
-    }
-
-    private void SpeedRate()
-    {
-        if (_isSpeedBoostActive == false && _isNegativeSpeedActive == false)
-        {
-            if (Input.GetKeyUp(KeyCode.LeftShift))
-            {
-                _leftShiftPressed = false;
-                _uiManager.UpdateBar(false);
-            }
-            if (Input.GetKeyDown(KeyCode.LeftShift))
-            {
-                _leftShiftPressed = true;
-                _uiManager.UpdateBar(true);              
-            }
-
-        }
-                
-    }
-
-    public void LeftShiftReleased()
-    {
-        _leftShiftPressed = false;
     }
 
     private void CanShootProjectile()
@@ -337,6 +374,88 @@ public class Player : MonoBehaviour
 
         }
 
+    }
+
+    private void ManageState(float horizontalInput)
+    {
+        if (horizontalInput <= -0.2)
+        {
+            _state = State.turningRight;
+        }
+        else if (horizontalInput >= 0.2)
+        {
+            _state = State.turningLeft;
+        }
+        else
+        {
+            _state = State.balanced;
+        }
+
+        if (Input.GetKeyDown(KeyCode.RightArrow) == false && Input.GetKeyDown(KeyCode.D) == false)
+        {
+            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+            {
+                _state = State.turningRight;
+            }
+            
+            if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.A))
+            {
+                _state = State.backFromRight;
+                
+            }
+            
+        }
+       
+        if (Input.GetKeyDown(KeyCode.LeftArrow) == false && Input.GetKeyDown(KeyCode.A) == false)
+        {
+            if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+            {
+                Debug.Log("Turning Right");
+                _state = State.turningLeft;
+            }
+
+            if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.D))
+            {
+                _state = State.backFromLeft;
+            }
+        }
+
+        if(horizontalInput == 0)
+        {
+            Invoke("BackToBalanced", 0.9f);
+            StartCoroutine(IncreaseTimerRoutine(horizontalInput));
+            //Create a timer to see if this time has passed using Time.deltaTime
+            //if the timer is less than the expected time
+            //cancel the invoke
+            
+        }
+        _anim.SetInteger("state", (int)_state);
+    }
+
+    IEnumerator IncreaseTimerRoutine(float horizontalInput)
+    {
+        while(_elapsedTime < 0.9f)
+        {
+            yield return new WaitForSeconds(0.1f);
+            _elapsedTime += 0.1f;
+
+            if (horizontalInput != 0)
+            {
+                CancelInvoke();
+            }
+        }
+
+    }
+
+    private void BackToBalanced()
+    {
+        _state = State.balanced;
+        _anim.SetInteger("state", (int)_state);
+    }
+
+    public void LeftShiftReleased()
+    {
+        _leftShiftPressed = false;
     }
 
     public void DontShootProjectile()
@@ -434,45 +553,11 @@ public class Player : MonoBehaviour
             _shieldGameObject.SetActive(true);
             yield return new WaitForSeconds(seconds2);
         }
-    }
 
-    private void ClosestEnemy()
-    {
-        float minDistance = Mathf.Infinity;
-        Vector3 currentPosition = transform.position;
-
-        if (_spawnManager.BossHasSpawned)
+        if (_isShieldActive == false)
         {
-            _closestTarget = _spawnManager.InstantiatedBoss;
+            _shieldGameObject.SetActive(false);
         }
-        else
-        {
-            if (_spawnManager.enemies.Count != 0)
-            {
-                foreach (GameObject enemy in _spawnManager.enemies)
-                {
-                    if (enemy != null && enemy.transform.position.y > -2)
-                    {
-                        _canShootProjectile = true;
-                        float distance = Vector3.Distance(enemy.transform.position, currentPosition);
-                        if (distance < minDistance)
-                        {
-                            _closestTarget = enemy;
-                            minDistance = distance;
-
-                        }
-                    }
-                    else if (enemy != null && enemy.transform.position.y >= -2)
-                    {
-                        _canShootProjectile = false;
-                    }
-
-                }
-
-            }
-        }
-        
-
     }
 
     public GameObject GetTarget()

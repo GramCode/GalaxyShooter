@@ -132,15 +132,12 @@ public class SpawnManager : MonoBehaviour
         switch (enemyType)
         {
             case EnemyType.Default:
-                //Shoot normal laser
                 _enemy = _enemiesPrefab[0];
                 break;
             case EnemyType.LaserBeam:
-                //Shoot LaserBeam
                 _enemy = _enemiesPrefab[1];
                 break;
             case EnemyType.FireTwice:
-                //Fire Twice
                 _enemy = _enemiesPrefab[2];
                 break;
             case EnemyType.ShootBackward:
@@ -300,13 +297,10 @@ public class SpawnManager : MonoBehaviour
                 enemy = enemyShootBackwards.GetTransform();
                 powerupPosition = powerUp.GetPosition();
 
-
                 if (powerupPosition.x > enemy.position.x - 0.8f && powerupPosition.x < enemy.position.x + 0.8f && powerupPosition.y < enemy.position.y - 2.0f)
                 {
-
                     enemyShootBackwards.Shoot();
                     enemyShootBackwards.ShootPowerUp();
-
                 }
             }
 
@@ -318,10 +312,8 @@ public class SpawnManager : MonoBehaviour
 
                 if (powerupPosition.x > enemy.position.x - 0.8f && powerupPosition.x < enemy.position.x + 0.8f && powerupPosition.y < enemy.position.y - 2.0f)
                 {
-
                     enemyScript.Shoot();
                     enemyScript.ShootPowerUp();
-
                 }
             }
 

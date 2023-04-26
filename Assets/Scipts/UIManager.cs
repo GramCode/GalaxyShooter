@@ -22,6 +22,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _prohibitionSign;
     [SerializeField] private Sprite[] _bossLivesSprites;
     [SerializeField] private Image _bossLivesImage;
+    [SerializeField] private Image _countDownFillImage;
+    [SerializeField] private GameObject _countDownGameObject;
 
     private GameManager _gameManager;
     private Player _player;
@@ -73,7 +75,7 @@ public class UIManager : MonoBehaviour
 
         _ammoText.color = Color.green;
         _thrusterBarColor = _barImage.color;
-        _wavesTextStartingPosition = _wavesCountText.transform.position;
+        _wavesTextStartingPosition = new Vector3(-331.5f, 250.43f);
 
     }
 
@@ -82,9 +84,7 @@ public class UIManager : MonoBehaviour
         if (_asteroid.HasDestroyedAsteroid)
         {
             _ammoText.gameObject.SetActive(true);
-        }
-
-       
+        }       
     }
 
     public void UpdateScore(int playerScore)
@@ -262,7 +262,7 @@ public class UIManager : MonoBehaviour
     {
         _wavesText.text = "Wave " + wave;
         _wavesText.gameObject.SetActive(true);
-        _wavesCountText.gameObject.SetActive(true);
+        
         _isWavesTextShowing = true;
         StartCoroutine(WavesFlickerRoutine(wave));
         StartCoroutine(HideWavesTextRoutine());
@@ -274,15 +274,18 @@ public class UIManager : MonoBehaviour
         while (_isWavesTextShowing)
         {
             times++;
-            _wavesText.text = "Wave ";
-            _wavesCountText.text = wave.ToString();
-            yield return new WaitForSeconds(0.5f);
             _wavesText.text = "";
             _wavesCountText.text = "";
-           yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.5f);
+            _wavesText.text = "Wave " + wave;
+            
+            yield return new WaitForSeconds(0.5f);
+            
 
-            if (times > 2)
+            if (times == 3)
             {
+                _wavesText.text = "Wave";
+                _wavesCountText.gameObject.SetActive(true);
                 _wavesCountText.text = wave.ToString();
                 _wavesCountTextAnim.SetTrigger("Move");
             }
@@ -291,7 +294,7 @@ public class UIManager : MonoBehaviour
 
     IEnumerator HideWavesTextRoutine()
     {
-        yield return new WaitForSeconds(3.5f);
+        yield return new WaitForSeconds(3.0f);
         _wavesText.gameObject.SetActive(false);
         _isWavesTextShowing = false;
     }
@@ -394,5 +397,33 @@ public class UIManager : MonoBehaviour
     public void DisplayWavesCount()
     {
         _wavesCountText.gameObject.SetActive(true);
+    }
+
+    public void CountDown(float duration)
+    {
+        _countDownGameObject.SetActive(true);
+
+        if (_countDownFillImage.fillAmount == 0)
+        {
+            StartCoroutine(CountDownRoutine(duration));
+        }
+        else
+        {
+            _countDownFillImage.fillAmount = 0;
+        }
+    }
+
+    IEnumerator CountDownRoutine(float duration)
+    {
+        float elapsedTime = 0;
+        while(_countDownFillImage.fillAmount < 1)
+        {
+            // _countDownFillImage.fillAmount += 0.002f;
+            _countDownFillImage.fillAmount += 1.0f / duration * Time.deltaTime;
+             elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        _countDownGameObject.SetActive(false);
+        _countDownFillImage.fillAmount = 0;
     }
 }

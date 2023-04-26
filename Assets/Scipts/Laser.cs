@@ -7,15 +7,26 @@ public class Laser : MonoBehaviour
 
     [SerializeField] private float _speed = 8.0f;
     [SerializeField] private bool _isSpreadShot;
+    [SerializeField] private bool[] _lasers;
+    [SerializeField] private AudioClip _audioClip;
+    
+    private GameObject _camera;
     private Vector3 _distance;
     private bool _isEnemyLaser = false;
     private bool _isEnemyShootingBackward = false;
 
     private void Start()
     {
+        _camera = GameObject.Find("Main Camera");
+
         if (_isSpreadShot)
         {
             _distance = transform.position;
+            AudioSource.PlayClipAtPoint(_audioClip, _camera.transform.position, 1.0f);
+        }
+        else
+        {
+            AudioSource.PlayClipAtPoint(_audioClip, _camera.transform.position, 1.0f);
         }
     }
 

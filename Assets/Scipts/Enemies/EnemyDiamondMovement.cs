@@ -10,22 +10,21 @@ public class EnemyDiamondMovement : MonoBehaviour
 
     private GameObject[] _waypoints = new GameObject[4];
     private GameObject _container;
-    private bool _isWaypointDestroyed = false;
-    private bool _isCiclying = false;
-    private bool _completedCicle = false;
-    private int _waypointIndex;
-    private int _waypointIndexNegative = 3;
-    private int _waypointsCount;
     private Player _player;
     private SpawnManager _spawnManger;
     private GameManager _gameManager;
     private Collider2D _collider2D;
+    private int _waypointIndex;
+    private int _waypointIndexNegative = 3;
+    private int _waypointsCount;
     private int randomChoice;
     private float _fireRate = 3.0f;
     private float _canShoot = -1;
+    private bool _isWaypointDestroyed = false;
+    private bool _isCiclying = false;
+    private bool _completedCicle = false;
     private bool _isShieldActive = true;
     private bool _isDestroyed = false;
-    private bool _projectileHasBeenDestroyed = false;
 
     void Start()
     {
@@ -82,14 +81,6 @@ public class EnemyDiamondMovement : MonoBehaviour
         {
             EnemyBehavior();
             FireLaser();
-        }
-
-        if (_isDestroyed && _projectileHasBeenDestroyed == false && _player.projectile != null)
-        {
-            Projectile projectileScript = _player.projectile.GetComponent<Projectile>();
-            _projectileHasBeenDestroyed = true;
-            projectileScript.DestroyTarget();
-            projectileScript.DestroyProjectile();
         }
     }
 

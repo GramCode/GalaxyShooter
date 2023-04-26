@@ -79,13 +79,14 @@ public class PowerUp : MonoBehaviour
                             player.SpreadShotNotActive();
                         }
                         player.TripleShotActive();
+                        _uiManager.CountDown(5);
                         break;
                     case 1:
                         player.SpeedBoostActive();
                         _uiManager.UpdateBar(false);
                         player.LeftShiftReleased();
                         player.CanSpeedUp(true);
-                        
+                        _uiManager.CountDown(5);
                         break;
                     case 2:
                         player.ResetShieldLives();
@@ -103,9 +104,11 @@ public class PowerUp : MonoBehaviour
                             player.TripleShotNotActive();
                         }
                         player.SpreadShotActive();
+                        _uiManager.CountDown(5);
                         break;
                     case 6:
                         player.NegativeSpeedActive();
+                        _uiManager.CountDown(4);
                         break;
                     case 7:
                         _uiManager.DisplayProjectile();

@@ -20,7 +20,7 @@ public class Enemy : MonoBehaviour
     private float _canShootToPowerup = -1;
     private bool _isDestroyed = false;
     private bool _canShootPowerup = false;
-    private bool _projectileHasBeenDestroyed;
+    private bool _hasShootLaser = false;
     private SpawnManager _spawnManger;
     private GameManager _gameManager;
 
@@ -75,15 +75,13 @@ public class Enemy : MonoBehaviour
             FireLaser();
             FollowPlayer();
         }
-        if (_isDestroyed && _projectileHasBeenDestroyed == false && _player.projectile != null)
-        {
-            Projectile projectileScript = _player.projectile.GetComponent<Projectile>();
-            _projectileHasBeenDestroyed = true;
-            projectileScript.DestroyTarget();
-            projectileScript.DestroyProjectile();
-        }
-        
 
+        if (_hasShootLaser)
+        {
+            _canShoot = Time.time + _fireRate;
+            _canShootToPowerup = Time.time + _fireToPowerupRate;
+            _hasShootLaser = false;
+        }
     }
 
     void EnemyBehavior()
@@ -105,7 +103,7 @@ public class Enemy : MonoBehaviour
             float positionToInstatiate;
             _fireRate = Random.Range(3f, 7f);
             _canShoot = Time.time + _fireRate;
-
+            _hasShootLaser = true;
             positionToInstatiate = transform.position.y - 0.6f;
             GameObject enemyLaser = Instantiate(_laserPrefab, new Vector3(transform.position.x, positionToInstatiate, 0), Quaternion.identity);
             Laser lasers = enemyLaser.GetComponent<Laser>();
@@ -239,6 +237,7 @@ public class Enemy : MonoBehaviour
             Laser lasers = enemyLaser.GetComponent<Laser>();
             lasers.AssignEnemyLaser();
             _canShootPowerup = false;
+            _hasShootLaser = true;
         }
     }
 

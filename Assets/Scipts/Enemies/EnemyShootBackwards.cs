@@ -20,7 +20,7 @@ public class EnemyShootBackwards : MonoBehaviour
     private bool _hasShootBackward = false;
     private bool _isDestroyed = false;
     private bool _canShootPowerup = false;
-    private bool _projectileHasBeenDestroyed = false;
+    private bool _hasShootLaser = false;
     private SpawnManager _spawnManger;
     private GameManager _gameManager;
 
@@ -68,12 +68,11 @@ public class EnemyShootBackwards : MonoBehaviour
             ShootBackward();
         }
 
-        if (_isDestroyed && _projectileHasBeenDestroyed == false && _player.projectile != null)
+        if (_hasShootLaser)
         {
-            Projectile projectileScript = _player.projectile.GetComponent<Projectile>();
-            _projectileHasBeenDestroyed = true;
-            projectileScript.DestroyTarget();
-            projectileScript.DestroyProjectile();
+            _canShoot = Time.time + _fireRate;
+            _canShootToPowerup = Time.time + _fireToPowerupRate;
+            _hasShootLaser = false;
         }
     }
 
@@ -103,6 +102,7 @@ public class EnemyShootBackwards : MonoBehaviour
             Laser lasers = enemyLaser.GetComponent<Laser>();
             lasers.AssignEnemyLaser();
             _canShootPowerup = false;
+            _hasShootLaser = true;
         }
     }
 
@@ -228,6 +228,7 @@ public class EnemyShootBackwards : MonoBehaviour
             Laser lasers = enemyLaser.GetComponent<Laser>();
             lasers.AssignEnemyLaser();
             _canShootPowerup = false;
+            _hasShootLaser = true;
         }
     }
 

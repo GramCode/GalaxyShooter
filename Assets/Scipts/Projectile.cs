@@ -17,6 +17,7 @@ public class Projectile : MonoBehaviour
     private GameObject _instantiatedTarget = null;
     private GameObject _lockedTarget;
     private bool _isTargetDestroyed;
+    private bool _stopMoving = false;
 
     void Start()
     {
@@ -60,11 +61,25 @@ public class Projectile : MonoBehaviour
             transform.Translate(Vector2.up * _speed * Time.deltaTime);
             Destroy(_instantiatedTarget);
         }
+
         if (_lockedTarget != null)
         {
-            MoveTowardsEnemy();
-            LookAtTarget();
-        }
+            if (_stopMoving == true)
+            {
+                return;
+            }
+
+            if (Vector2.Distance(transform.position, _lockedTarget.transform.position) < 0.5f)
+            {
+                transform.RotateAround(_lockedTarget.transform.position, Vector3.forward, 220 * Time.deltaTime);
+            }
+            else
+            {
+                MoveTowardsEnemy();
+                LookAtTarget();
+            }
+            
+        }     
         else
         {
             transform.Translate(Vector2.up * _speed * Time.deltaTime);
@@ -79,7 +94,8 @@ public class Projectile : MonoBehaviour
 
     private void LookAtTarget()
     {
-        Vector3 direction = transform.position - _lockedTarget.transform.position;
+        Vector3 direction =  transform.position - _lockedTarget.transform.position;
+
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         _rigi.rotation = angle;
     }
@@ -87,6 +103,7 @@ public class Projectile : MonoBehaviour
     private IEnumerator DestroyProjectileRoutine()
     {
         yield return new WaitForSeconds(2.3f);
+        _stopMoving = true;
         DestroyTarget();
         DestroyProjectile();
     }
@@ -104,8 +121,8 @@ public class Projectile : MonoBehaviour
             if (_playerScript.GetTarget() == null)
             {
                 Debug.Log("target is null");
-                DestroyProjectile();
                 DestroyTarget();
+                DestroyProjectile();
             }
             else
             {
@@ -120,8 +137,9 @@ public class Projectile : MonoBehaviour
 
     public void DestroyProjectile()
     {
+        DestroyTarget();
         Destroy(gameObject.GetComponent<Collider2D>());
-        Destroy(this.gameObject, 0.4f);
+        Destroy(this.gameObject, 0.3f);
         Instantiate(_projectileExplosion, transform.position, Quaternion.identity);
     }
 
